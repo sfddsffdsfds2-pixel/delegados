@@ -92,7 +92,7 @@ export default function DelegatesListPage() {
 
   const searchType = [
     { key: 'ci', label: 'C.I.' },
-    { key: 'nombre', label: 'Nombre' },
+    { key: 'nombre', label: 'Nombre o apellido' },
     { key: 'telefono', label: 'Número de teléfono' },
   ];
 
@@ -426,7 +426,7 @@ export default function DelegatesListPage() {
                 {loading
                   ? 'Buscando...'
                   : appliedFilters.searchText
-                    ? 'Cancelar'
+                    ? 'Borrar'
                     : 'Buscar'}
               </Button>
 

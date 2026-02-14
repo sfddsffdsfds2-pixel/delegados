@@ -8,9 +8,10 @@ import DelegatesListPage from './pages/delegatesList/DelegatesListPage'
 import HomePage from './pages/HomePage'
 
 import Header from './generalComponents/Header'
-import { PrivateRoute, PublicRoute} from './generalComponents/Routes'
+import { PrivateRoute, PublicRoute } from './generalComponents/Routes'
 import { AuthProvider, useAuth } from './contexts/AuthContex'
 import AppTheme from './shared-theme/AppTheme'
+import { NotificationProvider } from './contexts/NotificationContext'
 
 
 /* Contenido principal */
@@ -21,7 +22,7 @@ const AppContent = () => {
 
       <Routes>
         <Route path="/" element={
-            <HomePage />
+          <HomePage />
         } />
 
         <Route
@@ -53,9 +54,11 @@ function App() {
     <AppTheme>
       <AuthProvider>
         <BrowserRouter>
-          <ConfirmProvider>
-            <AppContent />
-          </ConfirmProvider>
+          <NotificationProvider>
+            <ConfirmProvider>
+              <AppContent />
+            </ConfirmProvider>
+          </NotificationProvider>
         </BrowserRouter>
       </AuthProvider>
     </AppTheme>

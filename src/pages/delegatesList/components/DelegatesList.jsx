@@ -8,14 +8,22 @@ import EditDelegate from './EditDelegate';
 import { useConfirm } from 'material-ui-confirm';
 import { db } from "../../../firebase/firebase";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { FullScreenProgress } from '../../../generalComponents/FullScreenProgress';
+import { useNotification } from '../../../contexts/NotificationContext';
+
+const STORAGE_KEY = "delegados";
 
 const writeDelegados = (arr) => {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
 };
 
 const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDelegate, setSelectedDelegate] = useState(null);
+    const [deleteDelegate, setDeleteDelegate] = useState(false);
+    const [ updateDelegate, setUpdateDelegate ] = useState(false);
+    const { notify } = useNotification();
+
     const confirm = useConfirm()
 
     const handleEdit = (row) => {
@@ -25,62 +33,79 @@ const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
 
 
     const handleDelete = (id) => {
-      confirm({
-        title: "Borrar delegado",
-        description: "¿Está seguro que desea eliminar permanentemente del sistema al delegado?",
-        confirmationText: "Sí, borrar",
-        cancellationText: "No",
-      })
-        .then(async () => {
-          const docId = String(id);
-
-          await deleteDoc(doc(db, "delegados", docId));
-
-          setRows((prev) => {
-            const next = prev.filter((r) => String(r.id) !== docId);
-            writeDelegados(next);
-            return next;
-          });
+        confirm({
+            title: "Borrar delegado",
+            description: "¿Está seguro que desea eliminar permanentemente del sistema al delegado?",
+            confirmationText: "Sí, borrar",
+            cancellationText: "No",
         })
-        .catch(() => {});
+            .then(async (result) => {
+                if (result.confirmed === true) {
+                    try {
+                        setDeleteDelegate(true)
+                        const docId = String(id);
+
+                        await deleteDoc(doc(db, "delegados", docId));
+
+                        setRows((prev) => {
+                            const next = prev.filter((r) => String(r.id) !== docId);
+                            writeDelegados(next);
+                            return next;
+                        });
+
+                        notify("Delegado eliminado exitosamente del sistema", "success");
+                    } catch (error) {
+                        notify("Ocurrió un error inesperado eliminando el delegado. Inténtalo de nuevo más tarde.", "success");
+                        console.log(error)
+                    } finally {
+                        setDeleteDelegate(false)
+                    }
+                }
+            })
+            .catch(() => { });
     };
 
     const handleSave = async (updated) => {
-      try {
-        const docId = String(updated.id || updated.ci);
+        try {
+            setUpdateDelegate(true);
+            const docId = String(updated.id || updated.ci);
 
-        const payload = {
-          nombre: updated.nombre ?? "",
-          apellido: updated.apellido ?? "",
-          telefono: String(updated.telefono ?? ""),
-          distrito: Number(updated.distrito),
-          jefeRecinto: !!updated.jefeRecinto,
-          ci: docId,
-        };
+            const payload = {
+                nombre: updated.nombre ?? "",
+                apellido: updated.apellido ?? "",
+                telefono: String(updated.telefono ?? ""),
+                distrito: Number(updated.distrito),
+                jefeRecinto: !!updated.jefeRecinto,
+                ci: docId,
+            };
 
-        const mesaRaw = updated.mesa;
-        if (mesaRaw === "" || mesaRaw == null) {
-          payload.mesa = deleteField();
-        } else {
-          const mesaNum = Number(mesaRaw);
-          if (!Number.isNaN(mesaNum)) payload.mesa = mesaNum;
+            const mesaRaw = updated.mesa;
+            if (mesaRaw === "" || mesaRaw == null) {
+                payload.mesa = deleteField();
+            } else {
+                const mesaNum = Number(mesaRaw);
+                if (!Number.isNaN(mesaNum)) payload.mesa = mesaNum;
+            }
+
+            await updateDoc(doc(db, "delegados", docId), payload);
+
+            setRows((prev) => {
+                const next = prev.map((r) =>
+                    String(r.id) === docId ? { ...r, ...updated, id: docId } : r
+                );
+                writeDelegados(next);
+                return next;
+            });
+
+            setOpenEdit(false);
+
+            notify("Delegado actualizado exitosamente.", "success");
+        } catch (e) {
+            console.error(e);
+            notify("Ocurrió un error inesperado actualizando el delegado. Inténtalo de nuevo más tarde.", "error");
+        } finally {
+            setUpdateDelegate(false);
         }
-
-        await updateDoc(doc(db, "delegados", docId), payload);
-
-        setRows((prev) => {
-          const next = prev.map((r) =>
-            String(r.id) === docId ? { ...r, ...updated, id: docId } : r
-          );
-          writeDelegados(next);
-          return next;
-        });
-
-        setOpenEdit(false);
-      } catch (e) {
-        console.error(e);
-        alert("Error actualizando delegado");
-      }
     };
 
     const columns = useMemo(() => [
@@ -176,6 +201,10 @@ const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
         },
     ], []);
 
+    if(deleteDelegate) return <FullScreenProgress text='Eliminando delegado...' />
+
+    if(updateDelegate) return <FullScreenProgress text='Actualizando delegado...' />
+
     return (
         <AppTheme>
             <CssBaseline enableColorScheme />
@@ -214,10 +243,10 @@ const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
             </Box>
 
             <EditDelegate
-              open={openEdit}
-              onClose={() => setOpenEdit(false)}
-              selectedDelegate={selectedDelegate}
-              onSave={handleSave}
+                open={openEdit}
+                onClose={() => setOpenEdit(false)}
+                selectedDelegate={selectedDelegate}
+                onSave={handleSave}
             />
 
         </AppTheme>
