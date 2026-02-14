@@ -132,7 +132,10 @@ export default function DelegatesListPage() {
               xs: 'column',
               sm: 'row'
             }} gap={1}>
-              <FormControl sx={{minWidth: 100, maxWidth: 100}}>
+              <FormControl sx={{minWidth: 150, maxWidth: {
+                xs: '100%',
+                lg: 150
+              }}}>
                 <FormLabel>Distrito:</FormLabel>
                 <Select
                   name="distrito"
@@ -141,6 +144,17 @@ export default function DelegatesListPage() {
                     setSelectedDistrito(e.target.value);
                     setSelectedRecinto('');
                   }}
+                  renderValue={(selected) => (
+                    <Box
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                    Distrito  {selected}
+                    </Box>
+                  )}
                   required
                 >
                   {distritosData.map((d) => (
@@ -150,13 +164,27 @@ export default function DelegatesListPage() {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl sx={{minWidth: 200, maxWidth: 200}}>
+              <FormControl sx={{minWidth: 200, maxWidth: {
+                xs: '100%',
+                lg: 200
+              }}}>
                 <FormLabel>Recinto:</FormLabel>
                 <Select
                   name="distrito"
                   value={selectedRecinto}
                   onChange={(e) => setSelectedRecinto(e.target.value)}
                   required
+                  renderValue={(selected) => (
+                    <Box
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {selected}
+                    </Box>
+                  )}
                 >
                   {recintosDisponibles.map((r) => (
                     <MenuItem key={r.nombre} value={r.nombre}>
@@ -169,13 +197,27 @@ export default function DelegatesListPage() {
           </Box>
           <Divider />
           <Box display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1} width={'100%'}>
-            <FormControl>
+            <FormControl sx={{minWidth: 200, maxWidth: {
+                xs: '100%',
+                lg: 200
+              }}}>
               <FormLabel>Buscar por:</FormLabel>
               <Select
                 name="distrito"
                 value={searchTypeSelect}
                 onChange={handleTypeSearchChange}
                 required
+                renderValue={(selected) => (
+                    <Box
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {selected}
+                    </Box>
+                  )}
               >
                 {searchType.map((option) => (
                   <MenuItem key={option.key} value={option.key}>
