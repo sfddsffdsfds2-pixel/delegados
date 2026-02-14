@@ -34,7 +34,7 @@ const AppContent = () => {
         <Route
           path="/registrar-delegado"
           element={
-            <PrivateRoute allowedRoles={['admin']}>
+            <PrivateRoute allowedRoles={['admin', 'super_admin']}>
               <RegisterDelegatePage />
             </PrivateRoute>
           }
@@ -44,7 +44,7 @@ const AppContent = () => {
         <Route
           path="/lista-delegados-admin"
           element={
-            <PrivateRoute allowedRoles={['admin']}>
+            <PrivateRoute allowedRoles={['admin', 'super_admin']}>
               <DelegatesListPageAdmin />
             </PrivateRoute>
           }
@@ -53,7 +53,7 @@ const AppContent = () => {
         <Route
           path="/lista-delegados-jr"
           element={
-            <PrivateRoute allowedRoles={['jefe_recinto']}>
+            <PrivateRoute allowedRoles={['jefe_recinto', 'super_admin']}>
               <DelegatesListPageAdmin />
             </PrivateRoute>
           }

@@ -1,5 +1,5 @@
 import { Backdrop, Box, CircularProgress, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
-import DelegatesList from "./components/DelegatesListAdmin";
+import DelegatesListAdmin from "./components/DelegatesListAdmin";
 import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -83,12 +83,14 @@ export default function DelegatesListPageAdmin() {
     setSearchTypeSelect(e.target.value);
   };
 
-  const recintosDisponibles =
-    selectedDistrito === 'all'
-      ? []
-      : distritosData.find(
-        (d) => d.numero === Number(selectedDistrito)
-      )?.recintos || [];
+  const recintosDisponibles = useMemo(() => {
+    if (selectedDistrito === 'all') {
+      // Todos los recintos de todos los distritos
+      return distritosData.flatMap(d => d.recintos || []);
+    } else {
+      return distritosData.find(d => d.numero === Number(selectedDistrito))?.recintos || [];
+    }
+  }, [selectedDistrito, distritosData]);
 
   const searchType = [
     { key: 'ci', label: 'C.I.' },
@@ -142,12 +144,12 @@ export default function DelegatesListPageAdmin() {
 
       // 🔹 FILTRO RECINTO
       if (
-        selectedDistrito !== 'all' &&
         selectedRecinto !== 'all' &&
         row.recinto !== selectedRecinto
       ) {
         return false;
       }
+
 
       // 🔹 FILTRO BUSQUEDA (SOLO APLICADO)
       if (appliedFilters.searchText.trim() !== '') {
@@ -318,11 +320,24 @@ export default function DelegatesListPageAdmin() {
               }}>
                 <FormLabel>Recinto:</FormLabel>
                 <Select
-                  name="distrito"
+                  name="recinto"
                   value={selectedRecinto}
-                  onChange={(e) => setSelectedRecinto(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSelectedRecinto(value);
+
+                    if (value === 'all') {
+                      setSelectedDistrito('all');
+                    } else {
+                      const distritoEncontrado = distritosData.find(d =>
+                        d.recintos?.some(r => r.nombre === value)
+                      );
+                      if (distritoEncontrado) {
+                        setSelectedDistrito(distritoEncontrado.numero);
+                      }
+                    }
+                  }}
                   required
-                  disabled={selectedDistrito === 'all'}
                   renderValue={(selected) => (
                     <Box
                       sx={{
@@ -357,7 +372,7 @@ export default function DelegatesListPageAdmin() {
             }}>
               <FormLabel>Buscar por:</FormLabel>
               <Select
-                name="distrito"
+                name="search"
                 value={searchTypeSelect}
                 onChange={handleTypeSearchChange}
                 required
@@ -439,7 +454,7 @@ export default function DelegatesListPageAdmin() {
         </Box>
 
         <Box flex={1} minHeight={0}>
-          <DelegatesList rows={filteredRows} setRows={setRows} />
+          <DelegatesListAdmin rows={filteredRows} setRows={setRows} />
         </Box>
 
       </DelegatesListContainer>

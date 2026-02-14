@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
 
       let delegates = [];
-      if (profile.rol === "admin") {
+      if (profile.rol === "admin" || profile.rol === "super_admin") {
         delegates = await cacheDelegadosToSession();
       }
 

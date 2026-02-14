@@ -1,5 +1,5 @@
 import { Backdrop, Box, CircularProgress, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
-import DelegatesList from "./components/DelegatesListAdmin";
+import DelegatesListJR from "./components/DelegatesListJR";
 import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
