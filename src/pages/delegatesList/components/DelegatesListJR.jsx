@@ -21,7 +21,7 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows }) {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDelegate, setSelectedDelegate] = useState(null);
     const [deleteDelegate, setDeleteDelegate] = useState(false);
-    const [ updateDelegate, setUpdateDelegate ] = useState(false);
+    const [updateDelegate, setUpdateDelegate] = useState(false);
     const { notify } = useNotification();
 
     const confirm = useConfirm()
@@ -150,27 +150,6 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows }) {
             minWidth: 80,
         },
         {
-            field: 'distrito',
-            headerName: 'Distrito',
-            flex: 1,
-            sortable: false,
-            disableColumnMenu: true,
-            headerAlign: 'center',
-            align: 'center',
-            minWidth: 80,
-            maxWidth: 80
-        },
-        {
-            field: 'recinto',
-            headerName: 'Recinto',
-            flex: 1,
-            sortable: false,
-            disableColumnMenu: true,
-            headerAlign: 'center',
-            align: 'center',
-            minWidth: 100,
-        },
-        {
             field: 'mesa',
             headerName: 'Mesa',
             flex: 1,
@@ -182,28 +161,61 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows }) {
             align: 'center'
         },
         {
-            field: 'acciones',
-            headerName: 'Acciones',
+            field: 'asistencia',
+            headerName: 'Asistió',
+            flex: 1,
+            maxWidth: 80,
+            minWidth: 80,
             sortable: false,
             disableColumnMenu: true,
-            renderCell: (params) => (
-                <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={'center'} width={'100%'} height={'100%'}>
-                    <Button variant='outlined' onClick={(e) => { e.stopPropagation(); handleEdit(params.row) }}>
-                        <Typography mr={1}>Editar</Typography> <EditIcon fontSize='small' color='success' />
-                    </Button>
-                    <Button variant='outlined' onClick={(e) => { e.stopPropagation(); handleDelete(params.row.id) }}>
-                        <Typography mr={1}>Eliminar</Typography> <DeleteIcon fontSize='small' color='error' />
-                    </Button>
-                </Box>
-            ),
-            minWidth: 250,
             headerAlign: 'center',
+            align: 'center',
+            renderCell: (params) => (
+                <input
+                    type="checkbox"
+                    checked={!!params.value}
+                    onChange={(e) => {
+                        const updatedRow = { ...params.row, asistencia: e.target.checked };
+                        setRows((prev) =>
+                            prev.map((r) =>
+                                r.id === params.row.id ? updatedRow : r
+                            )
+                        );
+
+                    }}
+                />
+            )
+        },
+        {
+            field: 'pago',
+            headerName: 'Pagado',
+            flex: 1,
+            maxWidth: 80,
+            minWidth: 80,
+            sortable: false,
+            disableColumnMenu: true,
+            headerAlign: 'center',
+            align: 'center',
+            renderCell: (params) => (
+                <input
+                    type="checkbox"
+                    checked={!!params.value}
+                    onChange={(e) => {
+                        const updatedRow = { ...params.row, pago: e.target.checked };
+                        setRows((prev) =>
+                            prev.map((r) =>
+                                r.id === params.row.id ? updatedRow : r
+                            )
+                        );
+                    }}
+                />
+            )
         },
     ], []);
 
-    if(deleteDelegate) return <FullScreenProgress text='Eliminando delegado...' />
+    if (deleteDelegate) return <FullScreenProgress text='Eliminando delegado...' />
 
-    if(updateDelegate) return <FullScreenProgress text='Actualizando delegado...' />
+    if (updateDelegate) return <FullScreenProgress text='Actualizando delegado...' />
 
     return (
         <AppTheme>
