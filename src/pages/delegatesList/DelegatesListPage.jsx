@@ -7,7 +7,24 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { useColorScheme } from '@mui/material/styles';
 import data from '../../appConfig/Map.json';
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+const STORAGE_KEY = "delegados";
+
+const readDelegados = () => {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr)
+      ? arr.map((d) => ({
+        ...d,
+        id: d.id ?? d.ci,
+      }))
+      : [];
+  } catch {
+    return [];
+  }
+};
 
 const DelegatesListContainer = styled(Box)(({ theme }) => ({
   height: 'calc(100vh - 64px)',
@@ -39,6 +56,8 @@ const DelegatesListContainer = styled(Box)(({ theme }) => ({
 }));
 
 export default function DelegatesListPage() {
+  const [rows, setRows] = useState(() => readDelegados());
+
   const [searchTypeSelect, setSearchTypeSelect] = useState('ci');
   const [searchText, setSearchText] = useState('');
   const [selectedDistrito, setSelectedDistrito] = useState('');
@@ -49,32 +68,115 @@ export default function DelegatesListPage() {
       .municipios[0]
       .distritos;
 
+  const [appliedFilters, setAppliedFilters] = useState({
+    searchText: '',
+    searchType: 'ci',
+  });
+
 
   const { setMode } = useColorScheme();
-
 
   const handleTypeSearchChange = (e) => {
     setSearchTypeSelect(e.target.value);
   };
 
   const recintosDisponibles =
-    distritosData.find(
-      (d) => d.numero === Number(selectedDistrito)
-    )?.recintos || [];
+    selectedDistrito === 'all'
+      ? []
+      : distritosData.find(
+        (d) => d.numero === Number(selectedDistrito)
+      )?.recintos || [];
 
   const searchType = [
-    { key: 'ci', label: 'Buscar por C.I.' },
-    { key: 'nombre', label: 'Buscar por Nombre' },
-    { key: 'telefono', label: 'Buscar por número de teléfono' },
+    { key: 'ci', label: 'C.I.' },
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'telefono', label: 'Número de teléfono' },
   ];
 
   const handleSearch = () => {
-    console.log("Buscar:", searchText);
+    setAppliedFilters({
+      searchText,
+      searchType: searchTypeSelect,
+    });
   };
 
   const handleClear = () => {
     setSearchText('');
+
+    setAppliedFilters({
+      searchText: '',
+      searchType: searchTypeSelect,
+    });
   };
+
+  useEffect(() => {
+    if (searchText.trim() === '' && appliedFilters.searchText !== '') {
+      setAppliedFilters({
+        searchText: '',
+        searchType: searchTypeSelect,
+      });
+    }
+  }, [searchText]);
+
+
+
+  const filteredRows = useMemo(() => {
+    return rows.filter((row) => {
+
+      // 🔹 FILTRO DISTRITO
+      if (
+        selectedDistrito !== 'all' &&
+        Number(row.distrito) !== Number(selectedDistrito)
+      ) {
+        return false;
+      }
+
+      // 🔹 FILTRO RECINTO
+      if (
+        selectedDistrito !== 'all' &&
+        selectedRecinto !== 'all' &&
+        row.recinto !== selectedRecinto
+      ) {
+        return false;
+      }
+
+      // 🔹 FILTRO BUSQUEDA (SOLO APLICADO)
+      if (appliedFilters.searchText.trim() !== '') {
+        const search = appliedFilters.searchText.toLowerCase().trim();
+
+        if (appliedFilters.searchType === 'ci') {
+          if (!String(row.ci).toLowerCase().includes(search)) {
+            return false;
+          }
+        }
+
+        if (appliedFilters.searchType === 'telefono') {
+          if (!String(row.telefono).toLowerCase().includes(search)) {
+            return false;
+          }
+        }
+
+        if (appliedFilters.searchType === 'nombre') {
+          const fullName = `${row.nombre ?? ''} ${row.apellido ?? ''}`
+            .toLowerCase()
+            .trim();
+
+          if (!fullName.includes(search)) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    });
+  }, [
+    rows,
+    selectedDistrito,
+    selectedRecinto,
+    appliedFilters // 👈 ahora depende del filtro aplicado
+  ]);
+
+
 
   useEffect(() => {
     const html = document.documentElement;
@@ -93,12 +195,34 @@ export default function DelegatesListPage() {
   }, []);
 
   useEffect(() => {
+    if (distritosData.length > 0) {
+      const primerDistrito = distritosData[0];
+      setSelectedDistrito(primerDistrito.numero);
+
+      if (primerDistrito.recintos?.length > 0) {
+        setSelectedRecinto(primerDistrito.recintos[0].nombre);
+      }
+    }
+  }, []);
+
+
+  useEffect(() => {
     setMode('dark');
 
     return () => {
       setMode('light');
     };
   }, [setMode]);
+
+  const selectedSearchLabel =
+    searchType.find((s) => s.key === searchTypeSelect)?.label || '';
+
+  const formattedLabel =
+    searchTypeSelect === 'ci'
+      ? selectedSearchLabel
+      : selectedSearchLabel.charAt(0).toLowerCase() + selectedSearchLabel.slice(1);
+
+  const dynamicPlaceholder = `Introduce el ${formattedLabel}`;
 
 
 
@@ -132,17 +256,33 @@ export default function DelegatesListPage() {
               xs: 'column',
               sm: 'row'
             }} gap={1}>
-              <FormControl sx={{minWidth: 150, maxWidth: {
-                xs: '100%',
-                lg: 150
-              }}}>
+              <FormControl sx={{
+                minWidth: 150, maxWidth: {
+                  xs: '100%',
+                  lg: 150
+                }
+              }}>
                 <FormLabel>Distrito:</FormLabel>
                 <Select
                   name="distrito"
                   value={selectedDistrito}
                   onChange={(e) => {
-                    setSelectedDistrito(e.target.value);
-                    setSelectedRecinto('');
+                    const value = e.target.value;
+                    setSelectedDistrito(value);
+
+                    if (value === 'all') {
+                      setSelectedRecinto('all');
+                    } else {
+                      const distritoEncontrado = distritosData.find(
+                        (d) => d.numero === Number(value)
+                      );
+
+                      if (distritoEncontrado?.recintos?.length > 0) {
+                        setSelectedRecinto('all');
+                      } else {
+                        setSelectedRecinto('');
+                      }
+                    }
                   }}
                   renderValue={(selected) => (
                     <Box
@@ -152,11 +292,17 @@ export default function DelegatesListPage() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                    Distrito  {selected}
+                      {selected === 'all'
+                        ? 'Todos los distritos'
+                        : `Distrito ${selected}`}
                     </Box>
                   )}
+
                   required
                 >
+                  <MenuItem value="all">
+                    Todos los distritos
+                  </MenuItem>
                   {distritosData.map((d) => (
                     <MenuItem key={d.numero} value={d.numero}>
                       Distrito {d.numero}
@@ -164,16 +310,19 @@ export default function DelegatesListPage() {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl sx={{minWidth: 200, maxWidth: {
-                xs: '100%',
-                lg: 200
-              }}}>
+              <FormControl sx={{
+                minWidth: 200, maxWidth: {
+                  xs: '100%',
+                  lg: 200
+                }
+              }}>
                 <FormLabel>Recinto:</FormLabel>
                 <Select
                   name="distrito"
                   value={selectedRecinto}
                   onChange={(e) => setSelectedRecinto(e.target.value)}
                   required
+                  disabled={selectedDistrito === 'all'}
                   renderValue={(selected) => (
                     <Box
                       sx={{
@@ -182,10 +331,13 @@ export default function DelegatesListPage() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {selected}
+                      {selected === 'all' ? 'Todos los recintos' : selected}
                     </Box>
                   )}
                 >
+                  <MenuItem value="all">
+                    Todos los recintos
+                  </MenuItem>
                   {recintosDisponibles.map((r) => (
                     <MenuItem key={r.nombre} value={r.nombre}>
                       {r.nombre}
@@ -197,17 +349,19 @@ export default function DelegatesListPage() {
           </Box>
           <Divider />
           <Box display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1} width={'100%'}>
-            <FormControl sx={{minWidth: 200, maxWidth: {
-                xs: '100%',
-                lg: 200
-              }}}>
+            <FormControl sx={{
+              minWidth: 150,
+              maxWidth: 150
+            }}>
               <FormLabel>Buscar por:</FormLabel>
               <Select
                 name="distrito"
                 value={searchTypeSelect}
                 onChange={handleTypeSearchChange}
                 required
-                renderValue={(selected) => (
+                renderValue={(selected) => {
+                  const option = searchType.find((s) => s.key === selected);
+                  return (
                     <Box
                       sx={{
                         overflow: 'hidden',
@@ -215,14 +369,17 @@ export default function DelegatesListPage() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {selected}
+                      {option?.label}
                     </Box>
-                  )}
+                  );
+                }}
+
               >
                 {searchType.map((option) => (
                   <MenuItem key={option.key} value={option.key}>
                     {option.label}
                   </MenuItem>
+
                 ))}
               </Select>
             </FormControl>
@@ -230,13 +387,14 @@ export default function DelegatesListPage() {
             <Box display="flex" width={'100%'} gap={2} alignItems="flex-end" mt={2}>
               <TextField
                 fullWidth
-                label="Buscar"
+                label={dynamicPlaceholder}
                 value={searchText}
+                placeholder={dynamicPlaceholder}
                 onChange={(e) => setSearchText(e.target.value)}
                 size="small"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    paddingRight: '0px', // reduce espacio derecho
+                    paddingRight: '0px',
                   },
                   '& .MuiInputAdornment-root': {
                     margin: 0,
@@ -251,7 +409,7 @@ export default function DelegatesListPage() {
                           size="small"
                           sx={{
                             padding: 0,
-                            marginRight: '0px', // opcional si lo quieres 100% pegado usa 0
+                            marginRight: '0px',
                           }}
                         >
                           <ClearIcon fontSize="small" />
@@ -283,7 +441,7 @@ export default function DelegatesListPage() {
         </Box>
 
         <Box flex={1} minHeight={0}>
-          <DelegatesList />
+          <DelegatesList rows={filteredRows} setRows={setRows} />
         </Box>
 
       </DelegatesListContainer>

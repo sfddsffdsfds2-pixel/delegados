@@ -7,7 +7,7 @@ export const PrivateRoute = ({ children }) => {
 
   if (authLoading) return <FullScreenProgress />;
 
-  if (!isAuthenticated) return <Navigate to="/iniciar-sesión" replace />;
+  if (!isAuthenticated) return <Navigate to="/iniciar-sesion" replace />;
 
   return children;
 };

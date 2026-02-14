@@ -263,8 +263,7 @@ export default function RegisterDelegatePage(props) {
   return ( 
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <Toolbar />
-      <Container direction="column" justifyContent="center">
+      <Container direction="column" justifyContent="center" mt={{ xs: 12, lg: 0 }}>
 
         <Card variant="outlined" sx={{overflow: 'auto'}}>
           <Typography

@@ -18,6 +18,8 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigation = useNavigate();
   const location = useLocation();
+  const isLoginPage = location.pathname === "/iniciar-sesion";
+  const isRegisterDelegatePage = location.pathname === "/registrar-delegado";
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -40,14 +42,14 @@ export default function Header() {
           background: "transparent"
         };
 
-      case "/iniciar-sesión":
+      case "/iniciar-sesion":
         return {
-          backgroundColor: "#000000"
+          backgroundColor: "transparent"
         };
 
       case "/registrar-delegado":
         return {
-          backgroundColor: "#060c1b"
+          backgroundColor: "transparent"
         };
 
       case "/lista-delegados":
@@ -67,11 +69,11 @@ export default function Header() {
       case "/":
         return 0;
 
-      case "/iniciar-sesión":
+      case "/iniciar-sesion":
         return 0;
 
       case "/registrar-delegado":
-        return 2;
+        return 0;
 
       case "/lista-delegados":
         return 3;
@@ -94,7 +96,7 @@ export default function Header() {
           transition: "all 0.3s ease-in-out"
         }}>
         <Toolbar>
-          <Box display={'flex'} p={{xs: 0, lg: 0}} flexDirection={{
+          <Box display={'flex'} p={{ xs: 0, lg: 0 }} flexDirection={{
             xs: isAuthenticated ? 'row' : 'column',
             sm: 'row'
           }} width={'100%'} justifyContent={'space-between'} alignItems={'center'}>
@@ -198,64 +200,76 @@ export default function Header() {
                   }}
                 >
 
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={() => {
-                      navigation('/registrar-delegado')
-                    }}
-                    sx={{
-                      all: "unset",
-                      width: { xs: '100%', sm: 'auto' },
-                      color: '#FFFFFF',
-                      border: '2px solid #FFFFFF',
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: "8px",
-                      padding: "6px 16px",
-                      textAlign: 'center',
-                      transition: "all 0.2s ease-in-out",
-                      fontWeight: 600,
-                      '&:hover': {
-                        backgroundColor: "transparent",
-                        border: '2px solid #000000',
-                        color: "#000000",
-                      }
-                    }}
-                  >
-                    Registrarse como delegado
-                  </Button>
-
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    onClick={() => {
-                      navigation('/iniciar-sesión')
-                    }}
-                    sx={{
-                      all: "unset",
-                      width: { xs: '100%', sm: 'auto' },
-                      backgroundColor: "#FFFFFF",
-                      color: "#000000",
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                      display: "inline-flex",
-                      alignItems: "center",
-                      textAlign: 'center',
-                      justifyContent: "center",
-                      transition: "all 0.2s ease-in-out",
-                      '&:hover': {
-                        backgroundColor: "#000000",
+                  {!isLoginPage && (
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      onClick={() => {
+                        if (isRegisterDelegatePage) {
+                          navigation('/', { replace: true });
+                        } else {
+                          navigation('/registrar-delegado')
+                        }
+                      }}
+                      sx={{
+                        all: "unset",
+                        width: { xs: '100%', sm: 'auto' },
                         color: '#FFFFFF',
-                      }
-                    }}
-                  >
-                    Iniciar Sesión
-                  </Button>
+                        border: '2px solid #FFFFFF',
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "8px",
+                        padding: "6px 16px",
+                        textAlign: 'center',
+                        transition: "all 0.2s ease-in-out",
+                        fontWeight: 600,
+                        '&:hover': {
+                          backgroundColor: "transparent",
+                          border: '2px solid #000000',
+                          color: "#000000",
+                        }
+                      }}
+                    >
+                      {isRegisterDelegatePage ? "Volver al inicio" : "Registrarse como delegado"}
+                    </Button>
+                  )}
+
+                  {!isRegisterDelegatePage &&
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={() => {
+                        if (isLoginPage) {
+                          navigation('/', { replace: true });
+                        } else {
+                          navigation('/iniciar-sesion');
+                        }
+                      }}
+                      sx={{
+                        all: "unset",
+                        width: { xs: '100%', sm: 'auto' },
+                        backgroundColor: "#FFFFFF",
+                        color: "#000000",
+                        padding: "8px 16px",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        textAlign: 'center',
+                        justifyContent: "center",
+                        transition: "all 0.2s ease-in-out",
+                        '&:hover': {
+                          backgroundColor: "#000000",
+                          color: '#FFFFFF',
+                        }
+                      }}
+                    >
+                      {isLoginPage ? "Volver al inicio" : "Iniciar Sesión"}
+                    </Button>
+                  }
                 </Box> : null
             )}
           </Box>

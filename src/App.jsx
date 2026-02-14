@@ -25,7 +25,7 @@ const AppContent = () => {
         } />
 
         <Route
-          path="/iniciar-sesión"
+          path="/iniciar-sesion"
           element={<PublicRoute element={<LoginPage />} />}
         />
 

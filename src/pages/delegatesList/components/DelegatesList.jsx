@@ -9,31 +9,11 @@ import { useConfirm } from 'material-ui-confirm';
 import { db } from "../../../firebase/firebase";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 
-const STORAGE_KEY = "delegados";
-
-const readDelegados = () => {
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
-
-    return Array.isArray(arr)
-      ? arr
-          .map((d) => ({
-            ...d,
-            id: d.id ?? d.ci,
-          }))
-          .filter((d) => d.id != null)
-      : [];
-  } catch {
-    return [];
-  }
-};
-
 const writeDelegados = (arr) => {
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
 };
 
-const DelegatesList = memo(function DelegatesList() {
+const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDelegate, setSelectedDelegate] = useState(null);
     const confirm = useConfirm()
@@ -64,8 +44,6 @@ const DelegatesList = memo(function DelegatesList() {
         })
         .catch(() => {});
     };
-
-    const [rows, setRows] = useState(() => readDelegados());
 
     const handleSave = async (updated) => {
       try {
