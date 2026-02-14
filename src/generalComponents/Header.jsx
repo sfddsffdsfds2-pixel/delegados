@@ -13,11 +13,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useAuth } from '../contexts/AuthContex';
 import { Button } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Header() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const navigation = useNavigate();
   const location = useLocation();
 
   const handleMenu = (event) => {
@@ -28,11 +29,16 @@ export default function Header() {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigation("/", { replace: true })
+  }
+
   const getHeaderStyles = () => {
     switch (location.pathname) {
       case "/":
         return {
-          background: "linear-gradient(135deg, #FFA347, #FF7E5F)"
+          background: "transparent"
         };
 
       case "/iniciar-sesión":
@@ -83,6 +89,7 @@ export default function Header() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed"
         elevation={getHeaderElevation()}
+        color='transparent'
         sx={{
           ...getHeaderStyles(),
           transition: "all 0.3s ease-in-out"
@@ -91,7 +98,7 @@ export default function Header() {
           <Box display={'flex'} flexDirection={{
             xs: isAuthenticated ? 'row' : 'column',
             sm: 'row'
-          }} width={'100%'} justifyContent={'space-between'}>
+          }} width={'100%'} justifyContent={'space-between'} alignItems={'center'}>
             <Box display={'flex'} justifyContent={'center'}>
               <Box sx={{
                 height: 60,
@@ -130,10 +137,9 @@ export default function Header() {
                   id="menu-appbar"
                   anchorEl={anchorEl}
                   anchorOrigin={{
-                    vertical: 'top',
+                    vertical: 'bottom',
                     horizontal: 'right',
                   }}
-                  keepMounted
                   transformOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -141,14 +147,18 @@ export default function Header() {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
+
                   <MenuItem onClick={handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
+                  <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
                 </Menu>
               </Box>
             ) : (
               <Box display={'flex'} alignItems={'center'} gap={1}>
                 <Button
                   variant="outlined"
+                  onClick={() => {
+                    navigation('/registrar-delegado')
+                  }}
                   sx={{
                     all: "unset",
                     color: '#FFFFFF',
@@ -174,6 +184,9 @@ export default function Header() {
 
                 <Button
                   variant="contained"
+                  onClick={() => {
+                    navigation('/iniciar-sesión')
+                  }}
                   sx={{
                     all: "unset",
                     backgroundColor: "#FFFFFF",

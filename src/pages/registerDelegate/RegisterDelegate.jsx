@@ -18,6 +18,7 @@ import ColorModeSelect from '../login/components/ColorModeSelect';
 import { useNavigate } from 'react-router-dom';
 import { db } from "../../firebase/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { Toolbar } from '@mui/material';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -117,6 +118,7 @@ export default function RegisterDelegatePage(props) {
   return ( 
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
+      <Toolbar />
       <Container direction="column" justifyContent="center">
         {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
 
