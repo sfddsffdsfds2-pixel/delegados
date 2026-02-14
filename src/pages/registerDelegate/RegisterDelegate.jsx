@@ -17,7 +17,8 @@ import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../login/components/ColorModeSelect';
 import { useNavigate } from 'react-router-dom';
 import { db } from "../../firebase/firebase";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, serverTimestamp, runTransaction } from "firebase/firestore";
+import { useAuth } from '../../contexts/AuthContex';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -57,6 +58,8 @@ const Container = styled(Stack)(({ theme }) => ({
 
 export default function RegisterDelegatePage(props) {
   const navigate = useNavigate();
+
+  const { isAuthenticated, authLoading, rol } = useAuth();
 
   const [formData, setFormData] = React.useState({
     nombre: '',
@@ -232,6 +235,20 @@ export default function RegisterDelegatePage(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (authLoading) return;
+
+    if (!isAuthenticated) {
+      alert("Debes iniciar sesión para registrar delegados.");
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    if (rol !== "admin") {
+      alert("No tienes permisos para registrar delegados.");
+      navigate("/", { replace: true });
+      return;
+    }
+
     const ciClean = String(formData.ci).trim().replace(/\s+/g, "");
     const distNum = Number(formData.distrito);
 
@@ -242,10 +259,17 @@ export default function RegisterDelegatePage(props) {
       telefono: formData.telefono.trim(),
       distrito: distNum,
       recinto: formData.recinto,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     };
 
-    if (!clean.nombre || !clean.apellido || !clean.ci || !clean.telefono || !clean.distrito || !clean.recinto) {
+    if (
+      !clean.nombre ||
+      !clean.apellido ||
+      !clean.ci ||
+      !clean.telefono ||
+      !clean.distrito ||
+      !clean.recinto
+    ) {
       alert("Completa todos los campos");
       return;
     }
@@ -253,21 +277,70 @@ export default function RegisterDelegatePage(props) {
     try {
       const ref = doc(db, "delegados", ciClean);
 
-      await setDoc(ref, clean, { merge: false });
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(ref);
+
+        if (snap.exists()) {
+          throw new Error("CI_EXISTS");
+        }
+
+        tx.set(ref, clean);
+      });
+
+      try {
+        const raw = sessionStorage.getItem("delegados");
+        const arr = raw ? JSON.parse(raw) : [];
+        const next = Array.isArray(arr) ? arr : [];
+
+        next.unshift({ id: ciClean, ...clean });
+
+        sessionStorage.setItem("delegados", JSON.stringify(next));
+      } catch (e2) {
+        console.warn("No se pudo actualizar sessionStorage delegados", e2);
+      }
 
       alert("Registrado correctamente");
-      navigate("/", { replace: true });
+      navigate("/lista-delegados", { replace: true });
     } catch (err) {
       console.error(err);
+
+      if (err?.code === "failed-precondition") {
+        alert("Ese CI ya está registrado. No se puede repetir.");
+        return;
+      }
+
       alert(err?.message || "Error registrando. Revisa rules o config.");
     }
   };
+
+  if (!authLoading && (!isAuthenticated || rol !== "admin")) {
+    return (
+      <AppTheme {...props}>
+        <CssBaseline enableColorScheme />
+        <Container direction="column" justifyContent="center" mt={{ xs: 12, lg: 0 }}>
+          <Card variant="outlined">
+            <Typography component="h1" variant="h5">
+              Acceso restringido
+            </Typography>
+            <Typography variant="body2">
+              Solo un usuario con rol <b>admin</b> puede registrar delegados.
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => navigate("/login", { replace: true })}
+            >
+              Ir a iniciar sesión
+            </Button>
+          </Card>
+        </Container>
+      </AppTheme>
+    );
+  }
 
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Container direction="column" justifyContent="center" mt={{ xs: 12, lg: 0 }}>
-
         <Card variant="outlined" sx={{ overflow: 'auto' }}>
           <Typography
             component="h1"
@@ -347,7 +420,6 @@ export default function RegisterDelegatePage(props) {
             </FormControl>
 
             <FormControl fullWidth>
-
               <FormLabel>Recinto (Unidad Educativa)</FormLabel>
               <Select
                 name="recinto"
@@ -373,6 +445,7 @@ export default function RegisterDelegatePage(props) {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={authLoading}
             >
               Registrarse
             </Button>
