@@ -2,7 +2,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContex";
 import { FullScreenProgress } from "./FullScreenProgress";
 
-export const PrivateRoute = () => {
+export const PrivateRoute = ({ children }) => {
   const { isAuthenticated, authLoading } = useAuth();
 
   if (authLoading) {
@@ -11,11 +11,11 @@ export const PrivateRoute = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated) {a
     return <Navigate to="/" replace />;
   }
 
-  return <Outlet />;
+  return children;
 }
 
 export const PublicRoute = ({ element }) => {

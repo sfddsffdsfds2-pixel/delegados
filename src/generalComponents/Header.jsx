@@ -30,6 +30,7 @@ export default function Header() {
   };
 
   const handleLogout = () => {
+    handleClose();
     logout();
     navigation("/", { replace: true })
   }
