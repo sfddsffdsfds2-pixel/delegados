@@ -1,7 +1,7 @@
 import React, { useContext, createContext, useEffect, useMemo, useState } from "react";
 import { auth, db } from "../firebase/firebase";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, where } from "firebase/firestore";
 
 const AuthContext = createContext(null);
 
@@ -25,14 +25,14 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.setItem("rol", role);
   };
 
-  const checkRoleByEmail = async (email) => {
-    const q = query(collection(db, "admin"), where("email", "==", email));
-    const snap = await getDocs(q);
+  const checkRoleByUid = async (uid) => {
+    const ref = doc(db, "admin", uid);
+    const snap = await getDoc(ref);
 
-    if (snap.empty) return null;
+    if (!snap.exists()) return null;
 
-    const adminData = snap.docs[0].data();
-    return adminData?.rol || "admin";
+    const data = snap.data();
+    return data?.rol || "admin";
   };
 
   const cacheDelegadosToSession = async () => {
@@ -54,11 +54,9 @@ export const AuthProvider = ({ children }) => {
     const cleanEmail = (email || "").trim().toLowerCase();
     const cleanPass = (password || "").trim();
 
-    const delegates = await cacheDelegadosToSession();
-
     const cred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPass);
 
-    const role = await checkRoleByEmail(cleanEmail);
+    const role = await checkRoleByUid(cred.user.uid);
 
     if (!role) {
       await signOut(auth);
@@ -72,6 +70,11 @@ export const AuthProvider = ({ children }) => {
     setUser(cred.user);
     setRol(role);
     setIsAuthenticated(true);
+
+    let delegates = [];
+    if (role === "admin") {
+      delegates = await cacheDelegadosToSession();
+    }
 
     return { user: cred.user, rol: role, delegates };
   };
