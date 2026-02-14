@@ -34,81 +34,128 @@ export default function Header() {
           background: "transparent",
         }}>
         <Toolbar>
-          {(isAuthenticated && user) &&
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-          }
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Photos
-          </Typography>
-          {(isAuthenticated && user) ? (
-            <div>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-              </Menu>
-            </div>
-          ) : (
-            <Box display={'flex'} gap={1}>
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: 3,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  background: "linear-gradient(135deg, #FFA347, #FF7E5F)",
-                  '&:hover': {
-                    background: "linear-gradient(135deg, #FF8C42, #FF6A4D)",
-                  }
-                }}
-              >
-                Registrarse como delegado
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: 3,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  background: "#FFFFFF",
-                  color:  "linear-gradient(135deg, #FF8C42, #FF6A4D)",
-                }}
-              >
-                Iniciar Sesión
-              </Button>
+          <Box display={'flex'} flexDirection={{
+            xs: 'column',
+            sm: 'row'
+          }} width={'100%'} justifyContent={'space-between'}>
+            <Box display={'flex'} justifyContent={'center'}>
+              {(isAuthenticated && user) &&
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  sx={{ mr: 2 }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              }
+
+              <Box sx={{
+                height: 60,
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                pt: 2,
+              }}>
+                <Box
+                  component="img"
+                  src="/logo.webp"
+                  alt="Logo partido"
+                  sx={{
+                    height: 100,
+                    width: "auto",
+                    mr: 2
+                  }}
+                />
+              </Box>
+
             </Box>
-          )}
+
+            {(isAuthenticated && user) ? (
+              <div>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={handleClose}>Profile</MenuItem>
+                  <MenuItem onClick={handleClose}>My account</MenuItem>
+                </Menu>
+              </div>
+            ) : (
+              <Box display={'flex'} alignItems={'center'} gap={1}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    all: "unset",
+                    color: '#FFFFFF',
+                    border: '2px solid #FFFFFF',
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "8px",
+                    padding: "6px 16px",
+                    textAlign: 'center',
+                    transition: "all 0.2s ease-in-out",
+                    fontWeight: 600,
+                    '&:hover': {
+                      backgroundColor: "transparent",
+                      border: '2px solid #000000',
+                      color: "#000000"
+                    }
+                  }}
+                >
+                  Registrarse como delegado
+                </Button>
+
+                <Button
+                  variant="contained"
+                  sx={{
+                    all: "unset",
+                    backgroundColor: "#FFFFFF",
+                    color: "#000000",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    textAlign: 'center',
+                    justifyContent: "center",
+                    transition: "all 0.2s ease-in-out",
+                    '&:hover': {
+                      backgroundColor: "#000000",
+                      color: '#FFFFFF'
+                    }
+                  }}
+                >
+                  Iniciar Sesión
+                </Button>
+              </Box>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>
