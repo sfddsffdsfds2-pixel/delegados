@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContex";
 import { FullScreenProgress } from "./FullScreenProgress";
+import NotFoundPage from "./NotFoundPage";
 
 export const PrivateRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, authLoading, user } = useAuth();
@@ -14,7 +15,12 @@ export const PrivateRoute = ({ children, allowedRoles = [] }) => {
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user?.rol)) {
-    return <Navigate to="/" replace />;
+    return (
+      <NotFoundPage
+        message="Página no encontrada"
+        showButton={false}
+      />
+    )
   }
 
   // Usuario autenticado y con rol permitido
@@ -24,9 +30,9 @@ export const PublicRoute = ({ element }) => {
   const { user, isAuthenticated } = useAuth();
 
   if (isAuthenticated) {
-    if(user?.rol === 'admin') {
+    if (user?.rol === 'admin') {
       return <Navigate to="/lista-delegados-admin" replace />;
-    } else if(user?.rol === 'jefe_recinto'){
+    } else if (user?.rol === 'jefe_recinto') {
       return <Navigate to="/lista-delegados-jr" replace />;
     } else {
       return <Navigate to="/" replace />;
