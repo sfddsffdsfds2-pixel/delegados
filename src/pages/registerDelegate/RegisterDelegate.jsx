@@ -265,7 +265,6 @@ export default function RegisterDelegatePage(props) {
       <CssBaseline enableColorScheme />
       <Toolbar />
       <Container direction="column" justifyContent="center">
-        {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
 
         <Card variant="outlined" sx={{overflow: 'auto'}}>
           <Typography

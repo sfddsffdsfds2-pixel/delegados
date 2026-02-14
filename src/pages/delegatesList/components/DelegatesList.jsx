@@ -99,6 +99,8 @@ const DelegatesList = memo(function DelegatesList() {
             sortable: false,
             disableColumnMenu: true,
             headerAlign: 'center',
+            align: 'center',
+            minWidth: 150,
         },
         {
             field: 'apellido',
@@ -107,6 +109,8 @@ const DelegatesList = memo(function DelegatesList() {
             sortable: false,
             disableColumnMenu: true,
             headerAlign: 'center',
+            align: 'center',
+            minWidth: 150,
         },
         {
             field: 'ci',
@@ -115,6 +119,8 @@ const DelegatesList = memo(function DelegatesList() {
             sortable: false,
             disableColumnMenu: true,
             headerAlign: 'center',
+            align: 'center',
+            minWidth: 100,
         },
         {
             field: 'telefono',
@@ -123,6 +129,8 @@ const DelegatesList = memo(function DelegatesList() {
             sortable: false,
             disableColumnMenu: true,
             headerAlign: 'center',
+            align: 'center',
+            minWidth: 80,
         },
         {
             field: 'distrito',
@@ -131,6 +139,9 @@ const DelegatesList = memo(function DelegatesList() {
             sortable: false,
             disableColumnMenu: true,
             headerAlign: 'center',
+            align: 'center',
+            minWidth: 80,
+            maxWidth: 80
         },
         {
             field: 'recinto',
@@ -139,16 +150,19 @@ const DelegatesList = memo(function DelegatesList() {
             sortable: false,
             disableColumnMenu: true,
             headerAlign: 'center',
+            align: 'center',
+            minWidth: 100,
         },
         {
             field: 'mesa',
             headerName: 'Mesa',
             flex: 1,
-            maxWidth: 100,
-            minWidth: 100,
+            maxWidth: 80,
+            minWidth: 80,
             sortable: false,
             disableColumnMenu: true,
             headerAlign: 'center',
+            align: 'center'
         },
         {
             field: 'acciones',
@@ -179,6 +193,7 @@ const DelegatesList = memo(function DelegatesList() {
                     rows={rows}
                     columns={columns}
                     pageSizeOptions={[50, 100]}
+                    disableColumnResize
                     initialState={{
                         pagination: {
                             paginationModel: { pageSize: 50, page: 0 },

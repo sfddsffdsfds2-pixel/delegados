@@ -13,7 +13,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, authLoading, logout } = useAuth();
   console.log("user", user)
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigation = useNavigate();
@@ -94,7 +94,7 @@ export default function Header() {
           transition: "all 0.3s ease-in-out"
         }}>
         <Toolbar>
-          <Box display={'flex'} flexDirection={{
+          <Box display={'flex'} p={{xs: 0, lg: 0}} flexDirection={{
             xs: isAuthenticated ? 'row' : 'column',
             sm: 'row'
           }} width={'100%'} justifyContent={'space-between'} alignItems={'center'}>
@@ -111,7 +111,10 @@ export default function Header() {
                   src="/logo.webp"
                   alt="Logo partido"
                   sx={{
-                    height: 100,
+                    height: {
+                      xs: 80,
+                      lg: 100
+                    },
                     width: "auto",
                     mr: 2
                   }}
@@ -182,62 +185,78 @@ export default function Header() {
 
               </Box>
             ) : (
-              <Box display={'flex'} alignItems={'center'} gap={1}>
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    navigation('/registrar-delegado')
-                  }}
-                  sx={{
-                    all: "unset",
-                    color: '#FFFFFF',
-                    border: '2px solid #FFFFFF',
-                    cursor: "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "8px",
-                    padding: "6px 16px",
-                    textAlign: 'center',
-                    transition: "all 0.2s ease-in-out",
-                    fontWeight: 600,
-                    '&:hover': {
-                      backgroundColor: "transparent",
-                      border: '2px solid #000000',
-                      color: "#000000",
-                    }
+              !authLoading ?
+                <Box
+                  display="flex"
+                  flexDirection={{ xs: 'column', sm: 'row' }}
+                  alignItems="center"
+                  gap={1}
+                  width={{ xs: '100%', sm: 'auto' }}
+                  px={{
+                    xs: 2,
+                    lg: 0
                   }}
                 >
-                  Registrarse como delegado
-                </Button>
 
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    navigation('/iniciar-sesión')
-                  }}
-                  sx={{
-                    all: "unset",
-                    backgroundColor: "#FFFFFF",
-                    color: "#000000",
-                    padding: "8px 16px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    fontWeight: 600,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    textAlign: 'center',
-                    justifyContent: "center",
-                    transition: "all 0.2s ease-in-out",
-                    '&:hover': {
-                      backgroundColor: "#000000",
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => {
+                      navigation('/registrar-delegado')
+                    }}
+                    sx={{
+                      all: "unset",
+                      width: { xs: '100%', sm: 'auto' },
                       color: '#FFFFFF',
-                    }
-                  }}
-                >
-                  Iniciar Sesión
-                </Button>
-              </Box>
+                      border: '2px solid #FFFFFF',
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "8px",
+                      padding: "6px 16px",
+                      textAlign: 'center',
+                      transition: "all 0.2s ease-in-out",
+                      fontWeight: 600,
+                      '&:hover': {
+                        backgroundColor: "transparent",
+                        border: '2px solid #000000',
+                        color: "#000000",
+                      }
+                    }}
+                  >
+                    Registrarse como delegado
+                  </Button>
+
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => {
+                      navigation('/iniciar-sesión')
+                    }}
+                    sx={{
+                      all: "unset",
+                      width: { xs: '100%', sm: 'auto' },
+                      backgroundColor: "#FFFFFF",
+                      color: "#000000",
+                      padding: "8px 16px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      textAlign: 'center',
+                      justifyContent: "center",
+                      transition: "all 0.2s ease-in-out",
+                      '&:hover': {
+                        backgroundColor: "#000000",
+                        color: '#FFFFFF',
+                      }
+                    }}
+                  >
+                    Iniciar Sesión
+                  </Button>
+                </Box> : null
             )}
           </Box>
         </Toolbar>
