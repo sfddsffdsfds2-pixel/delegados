@@ -118,7 +118,7 @@ export default function LoginPage(props) {
 
     } catch (err) {
       console.error(err);
-      alert(err?.message || "Error al iniciar sesión");
+      notify("Ocurrió un error inesperado al iniciar sesión. Inténtalo de nuevo más tarde.", "success");
     }
   };
 

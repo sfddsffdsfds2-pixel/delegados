@@ -11,6 +11,7 @@ import { Button } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { getRoleIcon } from '../appConfig/RoleConfig';
+import { useNotification } from '../contexts/NotificationContext';
 
 
 export default function Header() {
@@ -20,6 +21,7 @@ export default function Header() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/iniciar-sesion";
   const isRegisterDelegatePage = location.pathname === "/registrar-delegado";
+  const { notify } = useNotification();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -32,7 +34,8 @@ export default function Header() {
   const handleLogout = () => {
     handleClose();
     logout();
-    navigation("/", { replace: true })
+    navigation("/", { replace: true });
+    notify("Cerraste sesión.", "info");
   }
 
   const getHeaderStyles = () => {
@@ -305,36 +308,6 @@ export default function Header() {
                     lg: 0
                   }}
                 >
-
-                  {!isLoginPage && (
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      onClick={() => {
-                        if (isRegisterDelegatePage) {
-                          navigation('/', { replace: true });
-                        } else {
-                          navigation('/registrar-delegado')
-                        }
-                      }}
-                      sx={{
-                        all: "unset",
-                        width: { xs: '100%', sm: 'auto' },
-                        cursor: "pointer",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "8px",
-                        padding: "6px 16px",
-                        textAlign: 'center',
-                        transition: "all 0.2s ease-in-out",
-                        fontWeight: 600,
-                         ...getButtonStylesByRoute(location.pathname, 'outlined', 'register')
-                      }}
-                    >
-                      {isRegisterDelegatePage ? "Volver al inicio" : "Registrarse como delegado"}
-                    </Button>
-                  )}
 
                   {!isRegisterDelegatePage &&
                     <Button
