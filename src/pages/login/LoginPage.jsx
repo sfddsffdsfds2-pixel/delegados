@@ -107,7 +107,7 @@ export default function LoginPage(props) {
       else if (rol === "jefe_recinto") alert("Eres JEFE DE RECINTO");
       else alert(`Rol: ${rol}`);
 
-      navigate("/registrar-delegado", { replace: true });
+      navigate("/lista-delegados", { replace: true });
     } catch (err) {
       console.error(err);
       alert(err?.message || "Error al iniciar sesión");

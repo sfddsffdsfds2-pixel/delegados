@@ -28,7 +28,6 @@ export default function EditDelegate({
     jefeRecinto: false,
   });
 
-  // Cargar datos cuando se abre el modal
   useEffect(() => {
     if (selectedDelegate) {
       setFormData({

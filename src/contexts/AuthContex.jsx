@@ -35,37 +35,47 @@ export const AuthProvider = ({ children }) => {
     return adminData?.rol || "admin";
   };
 
-  // ✅ Login (correo + contraseña)
+  const cacheDelegadosToSession = async () => {
+    const snap = await getDocs(collection(db, "delegados"));
+
+    const delegates = snap.docs.map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        ...data,
+      };
+    });
+
+    sessionStorage.setItem("delegados", JSON.stringify(delegates));
+    return delegates;
+  };
+
   const login = async (email, password) => {
     const cleanEmail = (email || "").trim().toLowerCase();
     const cleanPass = (password || "").trim();
 
-    // 1) Login en Auth
+    const delegates = await cacheDelegadosToSession();
+
     const cred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPass);
 
-    // 2) Verificar permiso en Firestore
     const role = await checkRoleByEmail(cleanEmail);
 
     if (!role) {
-      // no autorizado
       await signOut(auth);
       clearSession();
       throw new Error("No tienes permiso para ingresar.");
     }
 
-    // 3) Guardar sesión
     const token = await cred.user.getIdToken();
     setSession(token, cred.user.uid, cleanEmail, role);
 
-    // 4) Actualizar estado
     setUser(cred.user);
     setRol(role);
     setIsAuthenticated(true);
 
-    return { user: cred.user, rol: role };
+    return { user: cred.user, rol: role, delegates };
   };
 
-  // ✅ Logout
   const logout = async () => {
     await signOut(auth);
     setUser(null);
@@ -74,7 +84,6 @@ export const AuthProvider = ({ children }) => {
     clearSession();
   };
 
-  // ✅ Mantener sesión viva (por si recargas la página)
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       setAuthLoading(true);
@@ -100,11 +109,9 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-        // verificar rol
         const role = await checkRoleByEmail(email);
 
         if (!role) {
-          // usuario logueado pero sin permiso
           await signOut(auth);
           setUser(null);
           setRol("");
@@ -114,7 +121,6 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-        // refrescar token y guardar
         const token = await firebaseUser.getIdToken();
         setSession(token, firebaseUser.uid, email, role);
 
