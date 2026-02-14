@@ -7,7 +7,7 @@ import AppTheme from '../../../shared-theme/AppTheme';
 import EditDelegate from './EditDelegate';
 import { useConfirm } from 'material-ui-confirm';
 import { db } from "../../../firebase/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 const STORAGE_KEY = "delegados";
 
@@ -44,20 +44,25 @@ const DelegatesList = memo(function DelegatesList() {
     };
 
 
-    const handleDelete = () => {
-        confirm({
-            title: "Borrar al",
-            description: "¿Está seguro que desea eliminar permanentemente del sistema al?",
-            confirmationText: "Sí, borrar",
-            cancellationText: "No",
-        })
-            .then((result) => {
-                if (result.confirmed === true) {
+    const handleDelete = (id) => {
+      confirm({
+        title: "Borrar delegado",
+        description: "¿Está seguro que desea eliminar permanentemente del sistema al delegado?",
+        confirmationText: "Sí, borrar",
+        cancellationText: "No",
+      })
+        .then(async () => {
+          const docId = String(id);
 
-                }
-            })
-            .catch(() => {
-            });
+          await deleteDoc(doc(db, "delegados", docId));
+
+          setRows((prev) => {
+            const next = prev.filter((r) => String(r.id) !== docId);
+            writeDelegados(next);
+            return next;
+          });
+        })
+        .catch(() => {});
     };
 
     const [rows, setRows] = useState(() => readDelegados());
