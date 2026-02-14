@@ -5,7 +5,7 @@ import { FullScreenProgress } from "./FullScreenProgress";
 export const PrivateRoute = ({ children }) => {
   const { isAuthenticated, authLoading } = useAuth();
 
-  if (!isAuthenticated && authLoading) {
+  if (!isAuthenticated && !authLoading) {
     return <Navigate to="/" replace />;
   }
 
