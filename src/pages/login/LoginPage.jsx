@@ -12,9 +12,12 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from './components/ForgotPassword';
 import AppTheme from '../../shared-theme/AppTheme';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContex";
 import CircularProgress from '@mui/material/CircularProgress';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -34,6 +37,10 @@ const Card = styled(MuiCard)(({ theme }) => ({
     boxShadow:
       'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
   }),
+  boxShadow: theme.shadows[10],
+  '&:hover': {
+    boxShadow: theme.shadows[20],
+  },
 }));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
@@ -60,8 +67,11 @@ export default function LoginPage(props) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const { login, authLoading } = useAuth();
+  const [showPassword, setShowPassword] = React.useState(false);
 
-  const navigate = useNavigate();
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -135,7 +145,9 @@ export default function LoginPage(props) {
             }}
           >
             <FormControl>
-              <FormLabel htmlFor="email">Correo electrónico</FormLabel>
+              <FormLabel sx={{
+                fontWeight: 600
+              }} htmlFor="email">Correo electrónico</FormLabel>
               <TextField
                 error={emailError}
                 helperText={emailErrorMessage}
@@ -152,18 +164,46 @@ export default function LoginPage(props) {
             </FormControl>
 
             <FormControl>
-              <FormLabel htmlFor="password">Contraseña</FormLabel>
+              <FormLabel htmlFor="password" sx={{
+                fontWeight: 600
+              }}>Contraseña</FormLabel>
               <TextField
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 name="password"
                 placeholder="••••••"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 required
                 fullWidth
                 variant="outlined"
                 color={passwordError ? 'error' : 'primary'}
+                slotProps={{
+                  htmlInput: {
+                    maxLength: 30,
+                  },
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handleTogglePassword}
+                          disableRipple
+                          edge="end"
+                          size="small"
+                          sx={{
+                            border: 'none',
+                            p: 0,
+                            ":hover": {
+                              backgroundColor: 'transparent'
+                            }
+                          }}
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
+                }}
               />
             </FormControl>
 

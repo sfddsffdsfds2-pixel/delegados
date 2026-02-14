@@ -1,6 +1,6 @@
 import { Box, LinearProgress, Typography } from "@mui/material";
 
-export const FullScreenProgress = ({ open = true, text }) => {
+export const FullScreenProgress = ({ open = true, text = "Cargando..." }) => {
   if (!open) return null;
 
   return (
@@ -11,7 +11,7 @@ export const FullScreenProgress = ({ open = true, text }) => {
         left: 0,
         width: "100vw",
         height: "100vh",
-        bgcolor: "rgba(0,0,0,0.8)", 
+        bgcolor: "rgba(0,0,0,1)", 
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

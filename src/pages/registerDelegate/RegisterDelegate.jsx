@@ -33,6 +33,10 @@ const Card = styled(MuiCard)(({ theme }) => ({
   },
   boxShadow:
     'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
+  boxShadow: theme.shadows[10],
+  '&:hover': {
+    boxShadow: theme.shadows[20],
+  },
 }));
 
 const Container = styled(Stack)(({ theme }) => ({
@@ -64,7 +68,7 @@ export default function RegisterDelegatePage(props) {
     recinto: '',
   });
 
-  const geoData  = {
+  const geoData = {
     "departamentos": [
       {
         "nombre": "Cochabamba",
@@ -191,9 +195,9 @@ export default function RegisterDelegatePage(props) {
   const MUNI = "Quillacollo";
 
   const municipioObj = React.useMemo(() => {
-  const dep = geoData.departamentos.find(d => d.nombre === DEP);
-  const prov = dep?.provincias?.find(p => p.nombre === PROV);
-  const muni = prov?.municipios?.find(m => m.nombre === MUNI);
+    const dep = geoData.departamentos.find(d => d.nombre === DEP);
+    const prov = dep?.provincias?.find(p => p.nombre === PROV);
+    const muni = prov?.municipios?.find(m => m.nombre === MUNI);
     return muni ?? null;
   }, []);
 
@@ -260,12 +264,12 @@ export default function RegisterDelegatePage(props) {
     }
   };
 
-  return ( 
+  return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Container direction="column" justifyContent="center" mt={{ xs: 12, lg: 0 }}>
 
-        <Card variant="outlined" sx={{overflow: 'auto'}}>
+        <Card variant="outlined" sx={{ overflow: 'auto' }}>
           <Typography
             component="h1"
             variant="h4"
@@ -345,7 +349,7 @@ export default function RegisterDelegatePage(props) {
 
             <FormControl fullWidth>
 
-            <FormLabel>Recinto (Unidad Educativa)</FormLabel>
+              <FormLabel>Recinto (Unidad Educativa)</FormLabel>
               <Select
                 name="recinto"
                 value={formData.recinto}

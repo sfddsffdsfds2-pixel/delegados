@@ -10,6 +10,7 @@ import { useAuth } from '../contexts/AuthContex';
 import { Button } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { getRoleIcon } from '../appConfig/RoleConfig';
 
 
 export default function Header() {
@@ -84,6 +85,112 @@ export default function Header() {
   };
 
 
+  const getButtonStylesByRoute = (route, type, buttonType) => {
+  switch (route) {
+    case '/':
+      if (buttonType === 'register') {
+        return type === 'outlined'
+          ? {
+              color: '#FFFFFF',
+              border: '2px solid #FFFFFF',
+              '&:hover': {
+                backgroundColor: 'transparent',
+                color: '#FF7E5F',
+                border: '2px solid #FF7E5F',
+              },
+            }
+          : {
+              backgroundColor: '#000000',
+              color: '#FFFFFF',
+              '&:hover': {
+                backgroundColor: '#000000',
+                color: '#000000',
+              },
+            };
+      } else if (buttonType === 'login') {
+        return type === 'outlined'
+          ? {
+              color: '#FFFFFF',
+              border: '2px solid #FFFFFF',
+              '&:hover': {
+                color: '#FF7E5F',
+                border: '2px solid #FF7E5F',
+                backgroundColor: 'transparent',
+              },
+            }
+          : {
+              backgroundColor: '#FF7E5F',
+              color: '#FFFFFF',
+              '&:hover': {
+                backgroundColor: '#FFFFFF',
+                color: '#FF7E5F',
+              },
+            };
+      }
+      break;
+
+    case '/registrar-delegado':
+      if (buttonType === 'register') {
+        return type === 'outlined'
+          ? {
+              color: '#000000',
+              border: '2px solid #000000',
+              '&:hover': {
+                backgroundColor: 'transparent',
+                color: '#FFFFFF',
+                border: '2px solid #FFFFFF',
+              },
+            }
+          : {
+              backgroundColor: '#FFFFFF',
+              color: '#0088FF',
+              '&:hover': {
+                backgroundColor: '#0088FF',
+                color: '#FFFFFF',
+              },
+            };
+      } else if (buttonType === 'login') {
+        return type === 'outlined'
+          ? {
+              color: '#FFFFFF',
+              border: '2px solid #FFFFFF',
+              '&:hover': {
+                color: '#FF7E5F',
+                border: '2px solid #FF7E5F',
+                backgroundColor: 'transparent',
+              },
+            }
+          : {
+              backgroundColor: '#FFFFFF',
+              color: '#000000',
+              '&:hover': {
+                backgroundColor: '#000000',
+                color: '#FFFFFF',
+              },
+            };
+      }
+
+    default:
+      return type === 'outlined'
+        ? {
+            color: '#FFFFFF',
+            border: '2px solid #FFFFFF',
+            '&:hover': {
+              color: '#FF7E5F',
+              border: '2px solid #FF7E5F',
+              backgroundColor: 'transparent',
+            },
+          }
+        : {
+            backgroundColor: '#FFFFFF',
+            color: '#000000',
+            '&:hover': {
+              backgroundColor: '#000000',
+              color: '#FFFFFF',
+            },
+          };
+  }
+};
 
 
   return (
@@ -143,7 +250,7 @@ export default function Header() {
                     {user?.email}
                   </Typography>
 
-                  <AccountCircle />
+                  {getRoleIcon(user?.role)}
                 </Button>
                 <Menu
                   id="menu-appbar"
@@ -214,8 +321,6 @@ export default function Header() {
                       sx={{
                         all: "unset",
                         width: { xs: '100%', sm: 'auto' },
-                        color: '#FFFFFF',
-                        border: '2px solid #FFFFFF',
                         cursor: "pointer",
                         display: "inline-flex",
                         alignItems: "center",
@@ -225,11 +330,7 @@ export default function Header() {
                         textAlign: 'center',
                         transition: "all 0.2s ease-in-out",
                         fontWeight: 600,
-                        '&:hover': {
-                          backgroundColor: "transparent",
-                          border: '2px solid #000000',
-                          color: "#000000",
-                        }
+                         ...getButtonStylesByRoute(location.pathname, 'outlined', 'register')
                       }}
                     >
                       {isRegisterDelegatePage ? "Volver al inicio" : "Registrarse como delegado"}
@@ -250,21 +351,16 @@ export default function Header() {
                       sx={{
                         all: "unset",
                         width: { xs: '100%', sm: 'auto' },
-                        backgroundColor: "#FFFFFF",
-                        color: "#000000",
-                        padding: "8px 16px",
-                        borderRadius: "8px",
                         cursor: "pointer",
-                        fontWeight: 600,
                         display: "inline-flex",
                         alignItems: "center",
-                        textAlign: 'center',
                         justifyContent: "center",
+                        borderRadius: "8px",
+                        padding: "6px 16px",
+                        textAlign: 'center',
                         transition: "all 0.2s ease-in-out",
-                        '&:hover': {
-                          backgroundColor: "#000000",
-                          color: '#FFFFFF',
-                        }
+                        fontWeight: 600,
+                        ...getButtonStylesByRoute(location.pathname, 'contained', 'login')
                       }}
                     >
                       {isLoginPage ? "Volver al inicio" : "Iniciar Sesión"}

@@ -186,6 +186,9 @@ const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
                     columns={columns}
                     pageSizeOptions={[50, 100]}
                     disableColumnResize
+                    localeText={{
+                        noRowsLabel: 'Sin datos para mostrar'
+                    }}
                     initialState={{
                         pagination: {
                             paginationModel: { pageSize: 50, page: 0 },

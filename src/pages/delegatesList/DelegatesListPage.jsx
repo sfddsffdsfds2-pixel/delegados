@@ -1,4 +1,4 @@
-import { Box, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
+import { Backdrop, Box, CircularProgress, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
 import DelegatesList from "./components/DelegatesList";
 import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
@@ -6,6 +6,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useColorScheme } from '@mui/material/styles';
 import data from '../../appConfig/Map.json';
+import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -60,8 +61,10 @@ export default function DelegatesListPage() {
 
   const [searchTypeSelect, setSearchTypeSelect] = useState('ci');
   const [searchText, setSearchText] = useState('');
-  const [selectedDistrito, setSelectedDistrito] = useState('');
-  const [selectedRecinto, setSelectedRecinto] = useState('');
+  const [selectedDistrito, setSelectedDistrito] = useState('all');
+  const [selectedRecinto, setSelectedRecinto] = useState('all');
+  const [loading, setLoading] = useState(false);
+
   const distritosData =
     data.departamentos[0]
       .provincias[0]
@@ -94,10 +97,16 @@ export default function DelegatesListPage() {
   ];
 
   const handleSearch = () => {
-    setAppliedFilters({
-      searchText,
-      searchType: searchTypeSelect,
-    });
+    setLoading(true);
+
+    // Aquí simulas la búsqueda
+    setTimeout(() => {
+      setAppliedFilters({
+        searchText,
+        searchType: searchTypeSelect,
+      });
+      setLoading(false);
+    }, 1500);
   };
 
   const handleClear = () => {
@@ -173,7 +182,7 @@ export default function DelegatesListPage() {
     rows,
     selectedDistrito,
     selectedRecinto,
-    appliedFilters // 👈 ahora depende del filtro aplicado
+    appliedFilters
   ]);
 
 
@@ -193,18 +202,6 @@ export default function DelegatesListPage() {
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (distritosData.length > 0) {
-      const primerDistrito = distritosData[0];
-      setSelectedDistrito(primerDistrito.numero);
-
-      if (primerDistrito.recintos?.length > 0) {
-        setSelectedRecinto(primerDistrito.recintos[0].nombre);
-      }
-    }
-  }, []);
-
 
   useEffect(() => {
     setMode('dark');
@@ -228,6 +225,9 @@ export default function DelegatesListPage() {
 
   return (
     <AppTheme mode="dark">
+      {
+        loading && <FullScreenProgress text={'Realizando búsqueda'} />
+      }
       <CssBaseline enableColorScheme />
       <Toolbar />
       <DelegatesListContainer >
@@ -400,38 +400,34 @@ export default function DelegatesListPage() {
                     margin: 0,
                   },
                 }}
-                slotProps={{
-                  input: {
-                    endAdornment: searchText && (
-                      <InputAdornment position="end" sx={{ margin: 0 }}>
-                        <IconButton
-                          onClick={handleClear}
-                          size="small"
-                          sx={{
-                            padding: 0,
-                            marginRight: '0px',
-                          }}
-                        >
-                          <ClearIcon fontSize="small" />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }
-                }}
-              />
 
+              />
 
               <Button
                 variant="contained"
-                startIcon={<SearchIcon />}
-                onClick={handleSearch}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                disabled={!appliedFilters.searchText && searchText.trim() === ''}
+                color="secondary"
+                startIcon={
+                  loading
+                    ? <CircularProgress color="inherit" size={20} />
+                    : appliedFilters.searchText
+                      ? <ClearIcon />
+                      : <SearchIcon />
+                }
+                onClick={() => {
+                  if (loading) return;
+                  if (appliedFilters.searchText) {
+                    handleClear();
+                  } else {
                     handleSearch();
                   }
                 }}
               >
-                Buscar
+                {loading
+                  ? 'Buscando...'
+                  : appliedFilters.searchText
+                    ? 'Cancelar'
+                    : 'Buscar'}
               </Button>
 
             </Box>
