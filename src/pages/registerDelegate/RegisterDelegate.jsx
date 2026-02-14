@@ -61,57 +61,202 @@ export default function RegisterDelegatePage(props) {
     ci: '',
     telefono: '',
     distrito: '',
+    recinto: '',
   });
 
-  const distritos = [
-    'Distrito 1',
-    'Distrito 2',
-    'Distrito 3',
-    'Distrito 4',
-  ];
+  const geoData  = {
+    "departamentos": [
+      {
+        "nombre": "Cochabamba",
+        "provincias": [
+          {
+            "nombre": "Quillacollo",
+            "municipios": [
+              {
+                "nombre": "Quillacollo",
+                "distritos": [
+                  {
+                    "numero": 1,
+                    "recintos": [
+                      { "nombre": "Unidad Educativa Nestor Adriazola (Ex Colegio Nacional Calama)", "direccion": "Av. Constantino Morales y Av. Blanco Galindo Nro. 13", "mesas": 31 },
+                      { "nombre": "Instituto Particular Quillacollo", "direccion": "Quillacollo", "mesas": 14 },
+                      { "nombre": "Liceo América", "direccion": "General Pando y Pacheco", "mesas": 23 },
+                      { "nombre": "Unidad Educativa Villa Moderna", "direccion": "Waldo Ballivián esq. Rafael Pabón", "mesas": 19 },
+                      { "nombre": "(Cárcel) Penal San Pablo", "direccion": "Penal de San Pablo", "mesas": 2 },
+                      { "nombre": "Unidad Educativa 1ro. de Mayo", "direccion": "Calle 1ro de Mayo entre 21 de Septiembre y Thomas Bata", "mesas": 4 },
+                      { "nombre": "Unidad Educativa San Martin de Porres Tarde", "direccion": "Calle s/n Av. Albina Patiño", "mesas": 1 }
+                    ]
+                  },
+                  {
+                    "numero": 2,
+                    "recintos": [
+                      { "nombre": "Colegio Cristina Prada", "direccion": "23 de Marzo S/N y Carmela Cerruto", "mesas": 14 },
+                      { "nombre": "Colegio Franz Tamayo", "direccion": "Av. Suárez Miranda Nro. 515", "mesas": 22 },
+                      { "nombre": "Escuela Simón Bolívar", "direccion": "Cleomedes Blanco y Atacama", "mesas": 16 },
+                      { "nombre": "Escuela Fidelia C. De Sanchez", "direccion": "Calle 6 de Agosto y Cleomedes Blanco", "mesas": 12 },
+                      { "nombre": "Unidad Educativa Heroínas", "direccion": "C/ Ayacucho entre Gral. Camacho y Pacheco", "mesas": 13 },
+                      { "nombre": "Teofilo Vargas Candia B", "direccion": "23 de Marzo S/N y Carmela Cerruto", "mesas": 22 },
+                      { "nombre": "Unidad Educativa Flora Salinas Hinojosa Amalia Echalar", "direccion": "Luis Uría y 23 de Marzo", "mesas": 1 },
+                      { "nombre": "Unidad Educativa Nuestra Señora de Urkupiña", "direccion": "Calle Ricardo Soruco entre Walter Moreno y Nataniel Aguirre", "mesas": 2 },
+                      { "nombre": "Unidad Educativa Milivoy Eterovic Matenda", "direccion": "Km 12 1/2 Av. Blanco Galindo y Av. Cochabamba", "mesas": 14 }
+                    ]
+                  },
+                  {
+                    "numero": 3,
+                    "recintos": [
+                      { "nombre": "Escuela 12 de Septiembre", "direccion": "General Camacho Final Sud", "mesas": 16 },
+                      { "nombre": "Escuela Tomas Bata", "direccion": "Calle 12 de Enero", "mesas": 13 },
+                      { "nombre": "Unidad Educativa 12 de Enero B", "direccion": "Av. Gral. Camacho entre Calle 10 y Av. Fructuoso Mercado", "mesas": 5 },
+                      { "nombre": "Unidad Educativa Villa Asunción", "direccion": "Villa Asunción, lado Centro de Salud", "mesas": 4 },
+                      { "nombre": "Unidad Educativa San Martín de Porres", "direccion": "Barrio Manaco, Calle 12 de Enero", "mesas": 2 },
+                      { "nombre": "Colegio Nacional Calama (Nueva Infraestructura)", "direccion": "Av. Ferroviaria Sud", "mesas": 6 }
+                    ]
+                  },
+                  {
+                    "numero": 4,
+                    "recintos": [
+                      { "nombre": "Unidad Educativa Ironcollo", "direccion": "Ironcollo", "mesas": 15 },
+                      { "nombre": "Unidad Educativa Martin Cardenas", "direccion": "Barrio Fabril Esmeralda", "mesas": 11 },
+                      { "nombre": "Unidad Educativa Tunari", "direccion": "C/ 23 de Marzo entre Nueva Luz, OTB Tunari", "mesas": 8 },
+                      { "nombre": "Unidad Educativa 23 de Marzo", "direccion": "Calle Huachirancho", "mesas": 3 },
+                      { "nombre": "Unidad Educativa Jose Miguel Lanza (Illataco)", "direccion": "5 Km de Quillacollo al Norte", "mesas": 9 },
+                      { "nombre": "Normal Simón Rodríguez (Ex Nucleo Escolar Paucarpata)", "direccion": "4 Km de Quillacollo al Norte", "mesas": 14 }
+                    ]
+                  },
+                  {
+                    "numero": 5,
+                    "recintos": [
+                      { "nombre": "Unidad Educativa 21 de Septiembre", "direccion": "OTB Aasana Villa María, Calle 13 frente a la Plaza", "mesas": 13 },
+                      { "nombre": "Escuela Felix Martinez", "direccion": "Av. Blanco Galindo Km 10 1/2", "mesas": 29 },
+                      { "nombre": "Centro Integral Niño Jesus Fe y Alegria", "direccion": "Calle 4 y Miraflores", "mesas": 9 },
+                      { "nombre": "Unidad Educativa Pocpocollo", "direccion": "Comunidad Pocpocollo", "mesas": 2 }
+                    ]
+                  },
+                  {
+                    "numero": 6,
+                    "recintos": [
+                      { "nombre": "Unidad Educativa Villa De Urkupiña", "direccion": "Final Sud Av. Martín Cárdenas Calvario", "mesas": 18 },
+                      { "nombre": "Unidad Educativa Cerro Cota", "direccion": "OTB La Cota, zona Calvario", "mesas": 2 },
+                      { "nombre": "Unidad Educativa Cotapachi", "direccion": "Carretera Quillacollo–Cochabamba, Sindicato Agrario Cotapachi", "mesas": 2 }
+                    ]
+                  },
+                  {
+                    "numero": 7,
+                    "recintos": [
+                      { "nombre": "Unidad Educativa Marquina", "direccion": "Quillacollo", "mesas": 21 },
+                      { "nombre": "Unidad Educativa Marquina (Secundaria)", "direccion": "Zona Marquina, 6 Km camino a Morochata", "mesas": 4 },
+                      { "nombre": "Unidad Educativa Bella Vista", "direccion": "Bella Vista, 7 Km camino a Morochata", "mesas": 23 },
+                      { "nombre": "Unidad Educativa Potrero", "direccion": "Comunidad Potrero, camino vecinal al norte", "mesas": 6 }
+                    ]
+                  },
+                  {
+                    "numero": 8,
+                    "recintos": [
+                      { "nombre": "Escuela Arturo Quitón", "direccion": "Calle Final Antofagasta", "mesas": 19 },
+                      { "nombre": "Unidad Educativa Rene Crespo Rico", "direccion": "Calle Final Antofagasta", "mesas": 3 },
+                      { "nombre": "Unidad Educativa Oscar Alfaro", "direccion": "Pantoja Baja, parada Línea P", "mesas": 4 },
+                      { "nombre": "Unidad Educativa El Paso", "direccion": "El Paso", "mesas": 18 },
+                      { "nombre": "Unidad Educativa Maria Auxiliadora", "direccion": "Km 17 entre El Paso y Tiquipaya", "mesas": 7 },
+                      { "nombre": "Instituto Tecnológico El Paso", "direccion": "Av. Elías Meneces", "mesas": 9 },
+                      { "nombre": "Unidad Educativa El Paso A", "direccion": "Zona Central El Paso", "mesas": 16 },
+                      { "nombre": "Unidad Educativa Molle Molle", "direccion": "Comunidad Molle Molle", "mesas": 2 },
+                      { "nombre": "Unidad Educativa Santiago Apóstol", "direccion": "Zona Candelaria Urinzaya, El Paso", "mesas": 2 }
+                    ]
+                  },
+                  {
+                    "numero": 9,
+                    "recintos": [
+                      { "nombre": "Unidad Educativa Rene Barrientos Ortuño (Misicuni)", "direccion": "Misicuni", "mesas": 2 },
+                      { "nombre": "Centro Internado Misicuni", "direccion": "Misicuni", "mesas": 3 },
+                      { "nombre": "Unidad Educativa Liriuni", "direccion": "Liriuni", "mesas": 1 }
+                    ]
+                  },
+                  {
+                    "numero": 10,
+                    "recintos": [
+                      { "nombre": "Unidad Educativa Mcal. José Ballivián", "direccion": "Barrio Saavedra, Av. Capitán Víctor Ustáriz", "mesas": 14 }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
+  const DEP = "Cochabamba";
+  const PROV = "Quillacollo";
+  const MUNI = "Quillacollo";
+
+  const municipioObj = React.useMemo(() => {
+  const dep = geoData.departamentos.find(d => d.nombre === DEP);
+  const prov = dep?.provincias?.find(p => p.nombre === PROV);
+  const muni = prov?.municipios?.find(m => m.nombre === MUNI);
+    return muni ?? null;
+  }, []);
+
+  const distritos = React.useMemo(() => {
+    return (municipioObj?.distritos ?? []).map(d => d.numero);
+  }, [municipioObj]);
+
+  const recintosDisponibles = React.useMemo(() => {
+    const distNum = Number(formData.distrito);
+    if (!distNum) return [];
+    const found = municipioObj?.distritos?.find(d => d.numero === distNum);
+    return found?.recintos ?? [];
+  }, [formData.distrito, municipioObj]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    if (name === "distrito") {
+      setFormData((prev) => ({
+        ...prev,
+        distrito: value,
+        recinto: "",
+      }));
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const ciClean = String(formData.ci).trim().replace(/\s+/g, "");
+    const distNum = Number(formData.distrito);
+
     const clean = {
       nombre: formData.nombre.trim(),
       apellido: formData.apellido.trim(),
-      ci: formData.ci.trim(),
+      ci: ciClean,
       telefono: formData.telefono.trim(),
-      distrito: formData.distrito,
+      distrito: distNum,
+      recinto: formData.recinto,
+      createdAt: serverTimestamp()
     };
 
-    if (!clean.nombre || !clean.apellido || !clean.ci || !clean.telefono || !clean.distrito) {
+    if (!clean.nombre || !clean.apellido || !clean.ci || !clean.telefono || !clean.distrito || !clean.recinto) {
       alert("Completa todos los campos");
       return;
     }
 
     try {
-      const ref = doc(db, "delegados", clean.ci);
+      const ref = doc(db, "delegados", ciClean);
 
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        alert("Ese CI ya está registrado");
-        return;
-      }
-
-      await setDoc(ref, {
-        ...clean,
-        createdAt: serverTimestamp(),
-      });
+      await setDoc(ref, clean, { merge: false });
 
       alert("Registrado correctamente");
       navigate("/", { replace: true });
     } catch (err) {
       console.error(err);
-      alert("Error registrando. Revisa rules o config.");
+      alert(err?.message || "Error registrando. Revisa rules o config.");
     }
   };
 
@@ -192,9 +337,32 @@ export default function RegisterDelegatePage(props) {
                 onChange={handleChange}
                 required
               >
-                {distritos.map((d, index) => (
-                  <MenuItem key={index} value={d}>
-                    {d}
+                {distritos.map((d) => (
+                  <MenuItem key={d} value={d}>
+                    Distrito {d}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+
+            <FormLabel>Recinto (Unidad Educativa)</FormLabel>
+              <Select
+                name="recinto"
+                value={formData.recinto}
+                onChange={handleChange}
+                required
+                disabled={!formData.distrito}
+                displayEmpty
+              >
+                <MenuItem value="" disabled>
+                  {formData.distrito ? "Selecciona una unidad educativa" : "Primero elige un distrito"}
+                </MenuItem>
+
+                {recintosDisponibles.map((r, idx) => (
+                  <MenuItem key={idx} value={r.nombre}>
+                    {r.nombre}
                   </MenuItem>
                 ))}
               </Select>
