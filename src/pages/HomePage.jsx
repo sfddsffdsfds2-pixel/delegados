@@ -26,7 +26,7 @@ export default function HomePage (props) {
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Container direction="column" justifyContent="center">
-        Hola
+        
       </Container>
     </AppTheme>
     );
