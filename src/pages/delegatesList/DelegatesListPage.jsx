@@ -1,15 +1,18 @@
-import { Box, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Typography } from "@mui/material";
+import { Box, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
 import DelegatesList from "./components/DelegatesList";
 import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import { useColorScheme } from '@mui/material/styles';
 
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 
 const DelegatesListContainer = styled(Box)(({ theme }) => ({
-  height: '100vh',
+  height: 'calc(100vh - 64px)',
   display: 'flex',
+  maxWidth: '100vw',
   flexDirection: 'column',
   width: '100vw',
   maxWidth: '100vw',
@@ -38,6 +41,7 @@ const DelegatesListContainer = styled(Box)(({ theme }) => ({
 export default function DelegatesListPage() {
   const [distrito, setDistrito] = useState('ci');
   const [searchText, setSearchText] = useState('');
+  const { setMode } = useColorScheme();
 
 
   const handleTypeSearchChange = (e) => {
@@ -58,9 +62,36 @@ export default function DelegatesListPage() {
     setSearchText('');
   };
 
+  useEffect(() => {
+    const html = document.documentElement;
+
+    const previousScheme = html.getAttribute('data-mui-color-scheme');
+
+    html.setAttribute('data-mui-color-scheme', 'dark');
+
+    return () => {
+      if (previousScheme) {
+        html.setAttribute('data-mui-color-scheme', previousScheme);
+      } else {
+        html.removeAttribute('data-mui-color-scheme');
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setMode('dark');
+
+    return () => {
+      setMode('light');
+    };
+  }, [setMode]);
+
+
+
   return (
-    <AppTheme>
+    <AppTheme mode="dark">
       <CssBaseline enableColorScheme />
+      <Toolbar />
       <DelegatesListContainer >
         <Box mb={1} display={'flex'} flexDirection={'column'} gap={1}>
           <Box width={'100%'} display={'flex'} flexDirection={{
@@ -70,7 +101,7 @@ export default function DelegatesListPage() {
             <Typography
               sx={{
                 fontSize: {
-                  xs: '1.5rem', 
+                  xs: '1.5rem',
                   sm: '2rem',
                   textAlign: {
                     xs: 'center',

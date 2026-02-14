@@ -13,10 +13,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useAuth } from '../contexts/AuthContex';
 import { Button } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const location = useLocation();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -26,31 +28,71 @@ export default function Header() {
     setAnchorEl(null);
   };
 
+  const getHeaderStyles = () => {
+    switch (location.pathname) {
+      case "/":
+        return {
+          background: "linear-gradient(135deg, #FFA347, #FF7E5F)"
+        };
+
+      case "/iniciar-sesión":
+        return {
+          backgroundColor: "#000000"
+        };
+
+      case "/registrar-delegado":
+        return {
+          backgroundColor: "#1E3A8A"
+        };
+
+      case "/lista-delegados":
+        return {
+          backgroundColor: undefined,
+        };
+
+      default:
+        return {
+          backgroundColor: "#222"
+        };
+    }
+  };
+
+  const getHeaderElevation = () => {
+    switch (location.pathname) {
+      case "/":
+        return 0;
+
+      case "/iniciar-sesión":
+        return 0;
+
+      case "/registrar-delegado":
+        return 2;
+
+      case "/lista-delegados":
+        return 3;
+
+      default:
+        return 3;
+    }
+  };
+
+
+
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed"
-        elevation={0}
+        elevation={getHeaderElevation()}
         sx={{
-          background: "transparent",
+          ...getHeaderStyles(),
+          transition: "all 0.3s ease-in-out"
         }}>
         <Toolbar>
           <Box display={'flex'} flexDirection={{
-            xs: 'column',
+            xs: isAuthenticated ? 'row' : 'column',
             sm: 'row'
           }} width={'100%'} justifyContent={'space-between'}>
             <Box display={'flex'} justifyContent={'center'}>
-              {(isAuthenticated && user) &&
-                <IconButton
-                  size="large"
-                  edge="start"
-                  color="inherit"
-                  aria-label="menu"
-                  sx={{ mr: 2 }}
-                >
-                  <MenuIcon />
-                </IconButton>
-              }
-
               <Box sx={{
                 height: 60,
                 overflow: 'hidden',
@@ -73,7 +115,7 @@ export default function Header() {
             </Box>
 
             {(isAuthenticated && user) ? (
-              <div>
+              <Box height={'100%'}>
                 <IconButton
                   size="large"
                   aria-label="account of current user"
@@ -102,7 +144,7 @@ export default function Header() {
                   <MenuItem onClick={handleClose}>Profile</MenuItem>
                   <MenuItem onClick={handleClose}>My account</MenuItem>
                 </Menu>
-              </div>
+              </Box>
             ) : (
               <Box display={'flex'} alignItems={'center'} gap={1}>
                 <Button
