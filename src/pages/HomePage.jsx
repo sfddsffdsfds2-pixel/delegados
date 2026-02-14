@@ -97,6 +97,7 @@ export default function HomePage(props) {
             position: "relative",
             zIndex: 2,
             width: "100%",
+            height: "100%",
             px: { xs: 3, md: 12 },
             textAlign: { xs: "center", md: "left" },
           }}
@@ -107,12 +108,15 @@ export default function HomePage(props) {
             src="/oscarClaros.webp"
             alt="Oscar Claros"
             sx={{
-              height: { xs: "60vh", md: "110vh" },
-              maxHeight: { xs: "60vh", md: "110vh" },
+              position: 'absolute',
+              height: { xs: "110vh", md: "110vh" },
+              maxHeight: { xs: "110vh", md: "110vh" },
               objectFit: "contain",
               alignSelf: { md: "flex-end" },
               filter: "drop-shadow(0px 20px 40px rgba(0,0,0,0.6))",
-              mb: { xs: 4, md: 0 },
+              zIndex: 2,
+              bottom: 0,
+              left: 130,
             }}
           />
 
@@ -122,6 +126,12 @@ export default function HomePage(props) {
               color: "white",
               ml: { md: 6 },
               maxWidth: 700,
+              position: 'absolute',
+              top: 100,
+              right: 200,
+              zIndex: {
+                xs: 3
+              }
             }}
           >
             <Typography
@@ -144,8 +154,6 @@ export default function HomePage(props) {
             >
               {slides[current].description}
             </Typography>
-
-            
           </Box>
         </Stack>
       </Container>
