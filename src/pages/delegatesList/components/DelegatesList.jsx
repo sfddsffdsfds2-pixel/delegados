@@ -64,8 +64,9 @@ const DelegatesList = memo(function DelegatesList() {
 
     const handleSave = async (updated) => {
       try {
-        const docId = updated.id || updated.ci;
-        await updateDoc(doc(db, "delegados", String(docId)), {
+        const docId = String(updated.id || updated.ci);
+
+        await updateDoc(doc(db, "delegados", docId), {
           nombre: updated.nombre,
           apellido: updated.apellido,
           ci: updated.ci,
@@ -75,9 +76,13 @@ const DelegatesList = memo(function DelegatesList() {
           jefeRecinto: !!updated.jefeRecinto,
         });
 
-        const next = prev.map((r) =>
-          String(r.id) === String(docId) ? { ...r, ...updated, id: String(docId) } : r
-        );
+        setRows((prev) => {
+          const next = prev.map((r) =>
+            String(r.id) === docId ? { ...r, ...updated, id: docId } : r
+          );
+          writeDelegados(next);
+          return next;
+        });
 
         setOpenEdit(false);
       } catch (e) {
