@@ -15,7 +15,6 @@ import Select from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../login/components/ColorModeSelect';
-import { SitemarkIcon } from '../login/components/CustomIcons';
 import { useNavigate } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -34,10 +33,19 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 const Container = styled(Stack)(({ theme }) => ({
-  height: '100dvh',
+  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
+  minHeight: '100%',
   padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: { 
+  [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(4),
+  },
+  '&::before': {
+    content: '""',
+    display: 'block',
+    position: 'absolute',
+    zIndex: -1,
+    inset: 0,
+    background: 'linear-gradient(135deg, #FFA347, #FF7E5F)',
   },
 }));
 
@@ -75,15 +83,13 @@ export default function RegisterDelegatePage(props) {
     navigate('/', { replace: true });
   };
 
-  return (
+  return ( 
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Container direction="column" justifyContent="center">
-        <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
+        {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
 
         <Card variant="outlined" sx={{overflow: 'auto'}}>
-          <SitemarkIcon />
-
           <Typography
             component="h1"
             variant="h4"
