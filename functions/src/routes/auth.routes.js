@@ -1,4 +1,5 @@
 const router = require("express").Router();
+
 const { requireAuth } = require("../middlewares/auth");
 const { validate } = require("../middlewares/validate");
 const { registerSchema } = require("../schemas/auth.schema");

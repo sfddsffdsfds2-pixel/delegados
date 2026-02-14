@@ -11,14 +11,12 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { useAuth } from '../contexts/AuthContex';
+import { Button } from '@mui/material';
 
 export default function Header() {
-  const [auth, setAuth] = React.useState(true);
+  const { user, isAuthenticated } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -30,21 +28,27 @@ export default function Header() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
+      <AppBar position="fixed"
+        elevation={0}
+        sx={{
+          background: "transparent",
+        }}>
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+          {(isAuthenticated && user) &&
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          }
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Photos
           </Typography>
-          {auth && (
+          {(isAuthenticated && user) ? (
             <div>
               <IconButton
                 size="large"
@@ -75,6 +79,35 @@ export default function Header() {
                 <MenuItem onClick={handleClose}>My account</MenuItem>
               </Menu>
             </div>
+          ) : (
+            <Box display={'flex'} gap={1}>
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: 3,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  background: "linear-gradient(135deg, #FFA347, #FF7E5F)",
+                  '&:hover': {
+                    background: "linear-gradient(135deg, #FF8C42, #FF6A4D)",
+                  }
+                }}
+              >
+                Registrarse como delegado
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: 3,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  background: "#FFFFFF",
+                  color:  "linear-gradient(135deg, #FF8C42, #FF6A4D)",
+                }}
+              >
+                Iniciar Sesión
+              </Button>
+            </Box>
           )}
         </Toolbar>
       </AppBar>

@@ -142,14 +142,14 @@ export default function LoginPage(props) {
             }}
           >
             <FormControl>
-              <FormLabel htmlFor="email">Correo electrónico</FormLabel>
+              <FormLabel htmlFor="email">Número de celular</FormLabel>
               <TextField
                 error={emailError}
                 helperText={emailErrorMessage}
                 id="email"
                 type="email"
                 name="email"
-                placeholder="ingresa-tu-correo-aqui@gmail.com"
+                placeholder="Ingresa tu número de celular"
                 autoFocus
                 required
                 fullWidth
@@ -158,7 +158,7 @@ export default function LoginPage(props) {
               />
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
+              <FormLabel htmlFor="password">Contraseña</FormLabel>
               <TextField
                 error={passwordError}
                 helperText={passwordErrorMessage}
@@ -191,7 +191,7 @@ export default function LoginPage(props) {
               Olvidaste tu contraseña?
             </Link>
           </Box>
-          <Divider>or</Divider>
+          {/* <Divider>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Button
               fullWidth
@@ -201,7 +201,7 @@ export default function LoginPage(props) {
             >
               Ingresar con Google
             </Button>
-          </Box>
+          </Box> */}
         </Card>
       </SignInContainer>
     </AppTheme>

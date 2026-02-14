@@ -6,14 +6,13 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  const login = async (email, password) => {
-    
+  const login = async (phoneNumber, password) => {
+
   };
 
   const logout = async () => {
    
   };
-
 
   return (
     <AuthContext.Provider

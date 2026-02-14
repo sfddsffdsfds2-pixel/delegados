@@ -5,7 +5,7 @@ import RegisterDelegatePage from './pages/RegisterDelegate/RegisterDelegate'
 import DelegatesListPage from './pages/delegatesList/DelegatesListPage'
 import { ConfirmProvider } from 'material-ui-confirm';
 import HomePage from './pages/HomePage'
-import Header from './generalComponents/HeaderPage'
+import Header from './generalComponents/Header'
 import { Toolbar } from '@mui/material'
 import { AuthProvider } from './contexts/AuthContex'
 
@@ -15,7 +15,6 @@ function App() {
       <BrowserRouter>
         <ConfirmProvider>
           <Header />
-          <Toolbar />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/iniciar-sesión" element={<LoginPage />} />
