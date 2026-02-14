@@ -16,6 +16,8 @@ import { styled } from '@mui/material/styles';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from '../login/components/ColorModeSelect';
 import { useNavigate } from 'react-router-dom';
+import { db } from "../../firebase/firebase";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -74,13 +76,42 @@ export default function RegisterDelegatePage(props) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    const clean = {
+      nombre: formData.nombre.trim(),
+      apellido: formData.apellido.trim(),
+      ci: formData.ci.trim(),
+      telefono: formData.telefono.trim(),
+      distrito: formData.distrito,
+    };
 
-    // Aquí luego conectas backend
-    navigate('/', { replace: true });
+    if (!clean.nombre || !clean.apellido || !clean.ci || !clean.telefono || !clean.distrito) {
+      alert("Completa todos los campos");
+      return;
+    }
+
+    try {
+      const ref = doc(db, "delegados", clean.ci);
+
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        alert("Ese CI ya está registrado");
+        return;
+      }
+
+      await setDoc(ref, {
+        ...clean,
+        createdAt: serverTimestamp(),
+      });
+
+      alert("Registrado correctamente");
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error(err);
+      alert("Error registrando. Revisa rules o config.");
+    }
   };
 
   return ( 

@@ -1,7 +1,7 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/login/LoginPage'
-import RegisterDelegatePage from './pages/RegisterDelegate/RegisterDelegate'
+import RegisterDelegatePage from './pages/registerDelegate/RegisterDelegate';
 import DelegatesListPage from './pages/delegatesList/DelegatesListPage'
 import { ConfirmProvider } from 'material-ui-confirm';
 import HomePage from './pages/HomePage'

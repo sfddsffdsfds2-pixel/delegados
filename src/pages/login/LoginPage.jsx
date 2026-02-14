@@ -12,9 +12,8 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from './components/ForgotPassword';
 import AppTheme from '../../shared-theme/AppTheme';
-import ColorModeSelect from './components/ColorModeSelect';
-import { GoogleIcon } from './components/CustomIcons';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../../contexts/AuthContex";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -29,7 +28,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   },
   boxShadow:
     'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  ...theme.applyStyles('dark', {
+  ...theme.applyStyles?.('dark', {
     boxShadow:
       'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
   }),
@@ -42,20 +41,6 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(4),
   },
-  // '&::before': {
-  //   content: '""',
-  //   display: 'block',
-  //   position: 'absolute',
-  //   zIndex: -1,
-  //   inset: 0,
-  //   backgroundImage:
-  //     'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-  //   backgroundRepeat: 'no-repeat',
-  //   ...theme.applyStyles('dark', {
-  //     backgroundImage:
-  //       'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-  //   }),
-  // },
   '&::before': {
     content: '""',
     display: 'block',
@@ -72,53 +57,69 @@ export default function LoginPage(props) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
+  const { login } = useAuth();
+
   const navigate = useNavigate();
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    if (loading) return;
 
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+
+    const email = (emailEl?.value || "").trim().toLowerCase();
+    const password = (passEl?.value || "").trim();
 
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
-      setEmailErrorMessage('Porfavor ingresa un correo electrónico válido.');
+      setEmailErrorMessage("Por favor ingresa un correo electrónico válido.");
       isValid = false;
     } else {
       setEmailError(false);
-      setEmailErrorMessage('');
+      setEmailErrorMessage("");
     }
 
-    if (!password.value || password.value.length < 6) {
+    if (!password || password.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage('La contraseña no debe tener más de 6 caracteres.');
+      setPasswordErrorMessage("La contraseña debe tener al menos 6 caracteres.");
       isValid = false;
     } else {
       setPasswordError(false);
-      setPasswordErrorMessage('');
+      setPasswordErrorMessage("");
     }
 
     if (!isValid) return;
 
-    navigate('/registrar-delegado', { replace: true });
-  };
+    try {
+      setLoading(true);
 
+      const { rol } = await login(email, password);
+
+      if (rol === "admin") alert("Eres ADMIN");
+      else if (rol === "jefe_recinto") alert("Eres JEFE DE RECINTO");
+      else alert(`Rol: ${rol}`);
+
+      navigate("/registrar-delegado", { replace: true });
+    } catch (err) {
+      console.error(err);
+      alert(err?.message || "Error al iniciar sesión");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
-        {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
         <Card variant="outlined" sx={{ overflowY: 'auto' }}>
           <Typography
             component="h1"
@@ -127,6 +128,7 @@ export default function LoginPage(props) {
           >
             Iniciar Sesión
           </Typography>
+
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -139,14 +141,14 @@ export default function LoginPage(props) {
             }}
           >
             <FormControl>
-              <FormLabel htmlFor="email">Número de celular</FormLabel>
+              <FormLabel htmlFor="email">Correo electrónico</FormLabel>
               <TextField
                 error={emailError}
                 helperText={emailErrorMessage}
                 id="email"
                 type="email"
                 name="email"
-                placeholder="Ingresa tu número de celular"
+                placeholder="ingresa-tu-correo@gmail.com"
                 autoFocus
                 required
                 fullWidth
@@ -154,6 +156,7 @@ export default function LoginPage(props) {
                 color={emailError ? 'error' : 'primary'}
               />
             </FormControl>
+
             <FormControl>
               <FormLabel htmlFor="password">Contraseña</FormLabel>
               <TextField
@@ -163,21 +166,24 @@ export default function LoginPage(props) {
                 placeholder="••••••"
                 type="password"
                 id="password"
-                autoFocus
                 required
                 fullWidth
                 variant="outlined"
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
+
             <ForgotPassword open={open} handleClose={handleClose} />
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              disabled={loading}
             >
-              Ingresar
+              {loading ? "Ingresando..." : "Ingresar"}
             </Button>
+
             <Link
               component="button"
               type="button"
@@ -188,17 +194,6 @@ export default function LoginPage(props) {
               Olvidaste tu contraseña?
             </Link>
           </Box>
-          {/* <Divider>or</Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Ingresar con Google
-            </Button>
-          </Box> */}
         </Card>
       </SignInContainer>
     </AppTheme>
