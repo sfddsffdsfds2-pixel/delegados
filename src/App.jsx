@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContex'
 import AppTheme from './shared-theme/AppTheme'
 import { NotificationProvider } from './contexts/NotificationContext'
 import DelegatesListPageAdmin from './pages/delegatesList/DelegatesListPageAdmin'
+import NotFoundPage from './generalComponents/NotFoundPage'
 
 
 /* Contenido principal */
@@ -21,9 +22,9 @@ const AppContent = () => {
       <Header />
 
       <Routes>
-        <Route path="/" element={
-          <HomePage />
-        } />
+        <Route path="/"
+          element={<PublicRoute element={<HomePage />} />}
+        />
 
         <Route
           path="/iniciar-sesion"
@@ -49,7 +50,7 @@ const AppContent = () => {
           }
         />
 
-         <Route
+        <Route
           path="/lista-delegados-jr"
           element={
             <PrivateRoute allowedRoles={['jefe_recinto']}>
@@ -58,7 +59,7 @@ const AppContent = () => {
           }
         />
 
-        <Route path="*" element={<div>404</div>} />
+        <Route path="*" element={<NotFoundPage message='Página no encontrada' showButton={true} />} />
       </Routes>
     </>
   )

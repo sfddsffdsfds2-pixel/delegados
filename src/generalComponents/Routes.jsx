@@ -23,21 +23,26 @@ export const PrivateRoute = ({ children, allowedRoles = [] }) => {
     )
   }
 
-  // Usuario autenticado y con rol permitido
   return children;
 };
-export const PublicRoute = ({ element }) => {
-  const { user, isAuthenticated } = useAuth();
 
-  if (isAuthenticated) {
-    if (user?.rol === 'admin') {
-      return <Navigate to="/lista-delegados-admin" replace />;
-    } else if (user?.rol === 'jefe_recinto') {
-      return <Navigate to="/lista-delegados-jr" replace />;
-    } else {
-      return <Navigate to="/" replace />;
-    }
+export const PublicRoute = ({ element }) => {
+  const { user, isAuthenticated, authLoading } = useAuth();
+
+  if (authLoading) {
+    return <FullScreenProgress text="Cargando..." />;
   }
 
+  if (isAuthenticated) {
+    switch (user?.rol) {
+      case "super_admin":
+      case "admin":
+        return <Navigate to="/lista-delegados-admin" replace />;
+      case "jefe_recinto":
+        return <Navigate to="/lista-delegados-jr" replace />;
+      default:
+        return <Navigate to="/" replace />;
+    }
+  }
   return element;
 };

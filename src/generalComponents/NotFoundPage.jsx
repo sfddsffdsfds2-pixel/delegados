@@ -1,4 +1,4 @@
-import { Box, Button, CssBaseline, Typography, Stack } from "@mui/material";
+import { Box, Button, CssBaseline, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import AppTheme from "../shared-theme/AppTheme";
@@ -17,12 +17,20 @@ const Container = styled(Box)(() => ({
 }));
 
 export default function NotFoundPage({
-  buttonText = "Volver al inicio",
-  buttonRoute = "/",
+  buttonText = "Volver",
+  buttonRoute = null, 
   showButton = true,
   message = "Página no encontrada",
 }) {
   const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (buttonRoute) {
+      navigate(buttonRoute); 
+    } else {
+      navigate(-1, { replace: true });
+    }
+  };
 
   return (
     <AppTheme>
@@ -36,11 +44,7 @@ export default function NotFoundPage({
         </Typography>
 
         {showButton && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate(buttonRoute)}
-          >
+          <Button variant="contained" color="primary" onClick={handleClick}>
             {buttonText}
           </Button>
         )}
