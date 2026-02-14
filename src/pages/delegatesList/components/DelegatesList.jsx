@@ -66,15 +66,24 @@ const DelegatesList = memo(function DelegatesList() {
       try {
         const docId = String(updated.id || updated.ci);
 
-        await updateDoc(doc(db, "delegados", docId), {
-          nombre: updated.nombre,
-          apellido: updated.apellido,
-          ci: updated.ci,
-          telefono: updated.telefono,
-          distrito: updated.distrito,
-          mesa: updated.mesa,
+        const payload = {
+          nombre: updated.nombre ?? "",
+          apellido: updated.apellido ?? "",
+          telefono: String(updated.telefono ?? ""),
+          distrito: Number(updated.distrito),
           jefeRecinto: !!updated.jefeRecinto,
-        });
+          ci: docId,
+        };
+
+        const mesaRaw = updated.mesa;
+        if (mesaRaw === "" || mesaRaw == null) {
+          payload.mesa = deleteField();
+        } else {
+          const mesaNum = Number(mesaRaw);
+          if (!Number.isNaN(mesaNum)) payload.mesa = mesaNum;
+        }
+
+        await updateDoc(doc(db, "delegados", docId), payload);
 
         setRows((prev) => {
           const next = prev.map((r) =>
