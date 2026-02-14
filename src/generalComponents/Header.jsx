@@ -3,20 +3,18 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useAuth } from '../contexts/AuthContex';
 import { Button } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
+  console.log("user", user)
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigation = useNavigate();
   const location = useLocation();
@@ -49,12 +47,12 @@ export default function Header() {
 
       case "/registrar-delegado":
         return {
-          backgroundColor: "#1E3A8A"
+          backgroundColor: "#060c1b"
         };
 
       case "/lista-delegados":
         return {
-          backgroundColor: "#524a4a",
+          backgroundColor: "rgb(37, 42, 54)",
         };
 
       default:
@@ -123,20 +121,30 @@ export default function Header() {
             </Box>
 
             {(isAuthenticated && user) ? (
-              <Box height={'100%'}>
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
+              <Box height={'100%'} display={'flex'} alignItems={'center'} gap={1}>
+                <Button
                   onClick={handleMenu}
-                  color="inherit"
+                  sx={{
+                    gap: 1
+                  }}
                 >
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    sx={{
+                      display: { xs: 'none', sm: 'block' }
+                    }}
+                  >
+                    {user?.email}
+                  </Typography>
+
                   <AccountCircle />
-                </IconButton>
+                </Button>
                 <Menu
                   id="menu-appbar"
                   anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
                   anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right',
@@ -145,13 +153,33 @@ export default function Header() {
                     vertical: 'top',
                     horizontal: 'right',
                   }}
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
                 >
+                  {/* 👇 Email solo en móvil */}
+                  <Box
+                    sx={{
+                      display: { xs: 'block', sm: 'none' },
+                      px: 2,
+                      py: 1,
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      {user?.email}
+                    </Typography>
+                  </Box>
+                  <MenuItem
+                    onClick={handleLogout}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1
+                    }}
+                  >
+                    <LogoutIcon fontSize="small" />
+                    Cerrar Sesión
+                  </MenuItem>
 
-                  <MenuItem onClick={handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
                 </Menu>
+
               </Box>
             ) : (
               <Box display={'flex'} alignItems={'center'} gap={1}>

@@ -14,6 +14,8 @@ import ForgotPassword from './components/ForgotPassword';
 import AppTheme from '../../shared-theme/AppTheme';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../../contexts/AuthContex";
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -57,9 +59,7 @@ export default function LoginPage(props) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-
-  const { login } = useAuth();
+  const { login, authLoading } = useAuth();
 
   const navigate = useNavigate();
 
@@ -68,7 +68,7 @@ export default function LoginPage(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (loading) return;
+    if (authLoading) return;
 
     const emailEl = document.getElementById("email");
     const passEl = document.getElementById("password");
@@ -99,22 +99,16 @@ export default function LoginPage(props) {
     if (!isValid) return;
 
     try {
-      setLoading(true);
 
-      const { rol } = await login(email, password);
+      await login(email, password);
 
-      if (rol === "admin") alert("Eres ADMIN");
-      else if (rol === "jefe_recinto") alert("Eres JEFE DE RECINTO");
-      else alert(`Rol: ${rol}`);
-
-      navigate("/lista-delegados", { replace: true });
     } catch (err) {
       console.error(err);
       alert(err?.message || "Error al iniciar sesión");
-    } finally {
-      setLoading(false);
     }
   };
+
+
 
   return (
     <AppTheme {...props}>
@@ -179,9 +173,26 @@ export default function LoginPage(props) {
               type="submit"
               fullWidth
               variant="contained"
-              disabled={loading}
+              disabled={authLoading}
             >
-              {loading ? "Ingresando..." : "Ingresar"}
+              {authLoading ? (
+                <Box sx={{
+                  color: '#FFFFFF',
+                  gap: 1,
+                  display: 'flex'
+                }}>
+                  <CircularProgress
+                    size={18}
+                    sx={{
+                      ml: 1.5,
+                      color: 'white',
+                    }}
+                  />
+                  <Typography>Ingresando...</Typography>
+                </Box>
+              ) : (
+                "Ingresar"
+              )}
             </Button>
 
             <Link

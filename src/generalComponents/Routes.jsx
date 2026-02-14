@@ -5,13 +5,7 @@ import { FullScreenProgress } from "./FullScreenProgress";
 export const PrivateRoute = ({ children }) => {
   const { isAuthenticated, authLoading } = useAuth();
 
-  if (authLoading) {
-    return (
-      <FullScreenProgress text={'Cargando...'}/>
-    );
-  }
-
-  if (!isAuthenticated) {a
+  if (!isAuthenticated && authLoading) {
     return <Navigate to="/" replace />;
   }
 
@@ -19,10 +13,11 @@ export const PrivateRoute = ({ children }) => {
 }
 
 export const PublicRoute = ({ element }) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth();
 
-  if (isAuthenticated) return <Navigate to="/" replace />
+  if (isAuthenticated) {
+    return <Navigate to="/lista-delegados" replace />;
+  }
 
-  return element
-}
-
+  return element;
+};
