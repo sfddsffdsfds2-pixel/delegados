@@ -350,8 +350,10 @@ export default function DelegatesListPage() {
           <Divider />
           <Box display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1} width={'100%'}>
             <FormControl sx={{
-              minWidth: 150,
-              maxWidth: 150
+              minWidth: 150, maxWidth: {
+                xs: '100%',
+                lg: 150
+              }
             }}>
               <FormLabel>Buscar por:</FormLabel>
               <Select

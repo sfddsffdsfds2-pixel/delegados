@@ -18,6 +18,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import { useNotification } from '../../contexts/NotificationContext';
 
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -68,6 +69,7 @@ export default function LoginPage(props) {
   const [open, setOpen] = React.useState(false);
   const { login, authLoading } = useAuth();
   const [showPassword, setShowPassword] = React.useState(false);
+  const { notify } = useNotification();
 
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev);
@@ -111,6 +113,8 @@ export default function LoginPage(props) {
     try {
 
       await login(email, password);
+
+      notify("Iniciaste sesión.", 'info');
 
     } catch (err) {
       console.error(err);

@@ -15,7 +15,6 @@ import { getRoleIcon } from '../appConfig/RoleConfig';
 
 export default function Header() {
   const { user, isAuthenticated, authLoading, logout } = useAuth();
-  console.log("user", user)
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigation = useNavigate();
   const location = useLocation();

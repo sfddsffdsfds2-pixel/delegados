@@ -53,7 +53,7 @@ const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
                             return next;
                         });
 
-                        notify("Delegado eliminado exitosamente del sistema", "success");
+                        notify("Delegado eliminado exitosamente del sistema.", "success");
                     } catch (error) {
                         notify("Ocurrió un error inesperado eliminando el delegado. Inténtalo de nuevo más tarde.", "success");
                         console.log(error)

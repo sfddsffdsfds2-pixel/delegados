@@ -18,7 +18,6 @@ import ColorModeSelect from '../login/components/ColorModeSelect';
 import { useNavigate } from 'react-router-dom';
 import { db } from "../../firebase/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { Toolbar } from '@mui/material';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
