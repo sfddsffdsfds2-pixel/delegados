@@ -43,13 +43,4 @@ function AppTheme(props) {
   );
 }
 
-AppTheme.propTypes = {
-  children: PropTypes.node,
-  /**
-   * This is for the docs site. You can ignore it or remove it.
-   */
-  disableCustomTheme: PropTypes.bool,
-  themeComponents: PropTypes.object,
-};
-
 export default AppTheme;

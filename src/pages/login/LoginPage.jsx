@@ -16,8 +16,8 @@ import { styled } from '@mui/material/styles';
 import ForgotPassword from './components/ForgotPassword';
 import AppTheme from '../../shared-theme/AppTheme';
 import ColorModeSelect from './components/ColorModeSelect';
-import { GoogleIcon, SitemarkIcon } from './components/CustomIcons';
-import { replace, useNavigate } from 'react-router-dom';
+import { GoogleIcon } from './components/CustomIcons';
+import { useNavigate } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -45,19 +45,27 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(4),
   },
+  // '&::before': {
+  //   content: '""',
+  //   display: 'block',
+  //   position: 'absolute',
+  //   zIndex: -1,
+  //   inset: 0,
+  //   backgroundImage:
+  //     'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+  //   backgroundRepeat: 'no-repeat',
+  //   ...theme.applyStyles('dark', {
+  //     backgroundImage:
+  //       'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+  //   }),
+  // },
   '&::before': {
     content: '""',
     display: 'block',
     position: 'absolute',
     zIndex: -1,
     inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
-      backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
+    background: 'linear-gradient(135deg, #FFA347, #FF7E5F)',
   },
 }));
 
@@ -113,9 +121,8 @@ export default function LoginPage(props) {
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
-        <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
+        {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
         <Card variant="outlined" sx={{ overflow: 'auto' }}>
-          <SitemarkIcon />
           <Typography
             component="h1"
             variant="h4"
