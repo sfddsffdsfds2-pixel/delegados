@@ -30,7 +30,14 @@ const AppContent = () => {
           element={<PublicRoute element={<LoginPage />} />}
         />
 
-        <Route path="/registrar-delegado" element={<RegisterDelegatePage />} />
+        <Route
+          path="/registrar-delegado"
+          element={
+            <PrivateRoute>
+              <RegisterDelegatePage />
+            </PrivateRoute>
+          }
+        />
 
         {/* 🔒 Rutas privadas */}
         <Route
