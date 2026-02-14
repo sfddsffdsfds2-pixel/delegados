@@ -5,7 +5,7 @@ import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useColorScheme } from '@mui/material/styles';
-
+import data from '../../appConfig/Map.json';
 
 import { useEffect, useState } from "react";
 
@@ -39,14 +39,28 @@ const DelegatesListContainer = styled(Box)(({ theme }) => ({
 }));
 
 export default function DelegatesListPage() {
-  const [distrito, setDistrito] = useState('ci');
+  const [searchTypeSelect, setSearchTypeSelect] = useState('ci');
   const [searchText, setSearchText] = useState('');
+  const [selectedDistrito, setSelectedDistrito] = useState('');
+  const [selectedRecinto, setSelectedRecinto] = useState('');
+  const distritosData =
+    data.departamentos[0]
+      .provincias[0]
+      .municipios[0]
+      .distritos;
+
+
   const { setMode } = useColorScheme();
 
 
   const handleTypeSearchChange = (e) => {
-    setDistrito(e.target.value);
+    setSearchTypeSelect(e.target.value);
   };
+
+  const recintosDisponibles =
+    distritosData.find(
+      (d) => d.numero === Number(selectedDistrito)
+    )?.recintos || [];
 
   const searchType = [
     { key: 'ci', label: 'Buscar por C.I.' },
@@ -102,7 +116,7 @@ export default function DelegatesListPage() {
               sx={{
                 fontSize: {
                   xs: '1.5rem',
-                  sm: '2rem',
+                  sm: '2.5rem',
                   textAlign: {
                     xs: 'center',
                     sm: 'left'
@@ -118,32 +132,35 @@ export default function DelegatesListPage() {
               xs: 'column',
               sm: 'row'
             }} gap={1}>
-              <FormControl>
+              <FormControl sx={{minWidth: 100, maxWidth: 100}}>
                 <FormLabel>Distrito:</FormLabel>
                 <Select
                   name="distrito"
-                  value={distrito}
-                  onChange={handleTypeSearchChange}
+                  value={selectedDistrito}
+                  onChange={(e) => {
+                    setSelectedDistrito(e.target.value);
+                    setSelectedRecinto('');
+                  }}
                   required
                 >
-                  {searchType.map((option) => (
-                    <MenuItem key={option.key} value={option.key}>
-                      {option.label}
+                  {distritosData.map((d) => (
+                    <MenuItem key={d.numero} value={d.numero}>
+                      Distrito {d.numero}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
-              <FormControl>
+              <FormControl sx={{minWidth: 200, maxWidth: 200}}>
                 <FormLabel>Recinto:</FormLabel>
                 <Select
                   name="distrito"
-                  value={distrito}
-                  onChange={handleTypeSearchChange}
+                  value={selectedRecinto}
+                  onChange={(e) => setSelectedRecinto(e.target.value)}
                   required
                 >
-                  {searchType.map((option) => (
-                    <MenuItem key={option.key} value={option.key}>
-                      {option.label}
+                  {recintosDisponibles.map((r) => (
+                    <MenuItem key={r.nombre} value={r.nombre}>
+                      {r.nombre}
                     </MenuItem>
                   ))}
                 </Select>
@@ -156,7 +173,7 @@ export default function DelegatesListPage() {
               <FormLabel>Buscar por:</FormLabel>
               <Select
                 name="distrito"
-                value={distrito}
+                value={searchTypeSelect}
                 onChange={handleTypeSearchChange}
                 required
               >
