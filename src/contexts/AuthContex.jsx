@@ -42,7 +42,10 @@ export const AuthProvider = ({ children }) => {
     if (!snap.exists()) return null;
 
     const data = snap.data();
-    return data?.rol || "admin";
+    return {
+      rol: data?.rol || "admin",
+      name: data?.name || "admin",
+    };
   };
 
   const cacheDelegadosToSession = async () => {
@@ -60,26 +63,33 @@ export const AuthProvider = ({ children }) => {
     try {
       const cred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPass);
 
-      const role = await checkRoleByUid(cred.user.uid);
-      if (!role) {
+      const profile = await checkRoleByUid(cred.user.uid);
+      if (!profile) {
         await signOut(auth);
         clearSession();
         throw new Error("No tienes permiso para ingresar.");
       }
 
       const token = await cred.user.getIdToken();
-      setSession(token, cred.user.uid, cleanEmail, role);
+      setSession(token, cred.user.uid, cleanEmail, profile.rol);
 
-      setUser(cred.user);
-      setRol(role);
+      const minimalUser = {
+        uid: cred.user.uid,
+        email: cleanEmail,
+        name: profile.name,
+        rol: profile.rol,
+      };
+
+      setUser(minimalUser);
+      setRol(profile.rol);
       setIsAuthenticated(true);
 
       let delegates = [];
-      if (role === "admin") {
+      if (profile.rol === "admin") {
         delegates = await cacheDelegadosToSession();
       }
 
-      return { user: cred.user, rol: role, delegates };
+      return { user: minimalUser, rol: profile.rol, delegates };
     } finally {
       setAuthLoading(false);
     }
@@ -111,8 +121,8 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-        const role = await checkRoleByUid(firebaseUser.uid);
-        if (!role) {
+        const profile = await checkRoleByUid(firebaseUser.uid);
+        if (!profile) {
           await signOut(auth);
           setUser(null);
           setRol("");
@@ -124,13 +134,20 @@ export const AuthProvider = ({ children }) => {
         const email = (firebaseUser.email || "").trim().toLowerCase();
         const token = await firebaseUser.getIdToken();
 
-        setSession(token, firebaseUser.uid, email, role);
+        setSession(token, firebaseUser.uid, email, profile.rol);
 
-        setUser(firebaseUser);
-        setRol(role);
+        const minimalUser = {
+          uid: firebaseUser.uid,
+          email,
+          name: profile.name,
+          rol: profile.rol,
+        };
+
+        setUser(minimalUser);
+        setRol(profile.rol);
         setIsAuthenticated(true);
 
-        if (role === "admin" && !sessionStorage.getItem("delegados")) {
+        if (profile.rol === "admin" && !sessionStorage.getItem("delegados")) {
           await cacheDelegadosToSession();
         }
       } catch (e) {
