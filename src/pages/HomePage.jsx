@@ -10,13 +10,12 @@ import {
 } from "@mui/material";
 
 const Container = styled(Box)(() => ({
-  height: "100dvh",
+  height: "100vh",
   width: "100%",
   position: "relative",
   overflow: "hidden",
   display: "flex",
   alignItems: "center",
-  justifyContent: "center",
 }));
 
 const slides = [
@@ -38,7 +37,8 @@ const slides = [
   {
     image: "/bus.webp",
     title: "Terminal Interdepartamental",
-    description: "Terminal que conecte con la nueva terminal del Cercado.",
+    description:
+      "Terminal que conecte con la nueva terminal del Cercado.",
   },
   {
     image: "/compromiso.webp",
@@ -57,7 +57,9 @@ export default function HomePage(props) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+      setCurrent((prev) =>
+        prev === slides.length - 1 ? 0 : prev + 1
+      );
     }, 5000);
 
     return () => clearInterval(interval);
@@ -75,86 +77,75 @@ export default function HomePage(props) {
           transition: "background-image 1s ease-in-out",
         }}
       >
-        {/* Capa oscura */}
+        {/* Overlay oscuro */}
         <Box
           sx={{
             position: "absolute",
             inset: 0,
-            background: "rgba(0,0,0,0.6)",
+            background:
+              "linear-gradient(to right, rgba(0,0,0,0.9) 35%, rgba(0,0,0,0.6) 65%)",
             zIndex: 1,
           }}
         />
 
-        {/* Contenido principal */}
+        {/* CONTENIDO PRINCIPAL */}
         <Stack
           direction={{ xs: "column", md: "row" }}
-          spacing={6}
           alignItems="center"
-          justifyContent="space-between"
+          justifyContent="center"
           sx={{
             position: "relative",
             zIndex: 2,
             width: "100%",
-            maxWidth: "1400px",
-            px: 6,
+            px: { xs: 3, md: 12 },
+            textAlign: { xs: "center", md: "left" },
           }}
         >
-          {/* Imagen del alcalde */}
+          {/* ALCALDE */}
           <Box
             component="img"
             src="/oscarClaros.webp"
             alt="Oscar Claros"
             sx={{
-              height: { xs: "50vh", md: "85vh" },
+              height: { xs: "60vh", md: "110vh" },
+              maxHeight: { xs: "60vh", md: "110vh" },
               objectFit: "contain",
+              alignSelf: { md: "flex-end" },
+              filter: "drop-shadow(0px 20px 40px rgba(0,0,0,0.6))",
+              mb: { xs: 4, md: 0 },
             }}
           />
 
-          {/* Texto */}
+          {/* TEXTO DINÁMICO */}
           <Box
             sx={{
               color: "white",
-              maxWidth: 600,
-              textAlign: { xs: "center", md: "left" },
+              ml: { md: 6 },
+              maxWidth: 700,
             }}
           >
             <Typography
-              variant="h3"
-              fontWeight="bold"
-              mb={3}
               sx={{
-                fontSize: { xs: "2rem", md: "3rem" },
+                fontSize: { xs: "2.2rem", md: "4rem" },
+                fontWeight: "bold",
+                lineHeight: 1.1,
+                mb: 3,
               }}
             >
               {slides[current].title}
             </Typography>
 
             <Typography
-              variant="h6"
-              mb={4}
               sx={{
-                fontSize: { xs: "1.1rem", md: "1.4rem" },
+                fontSize: { xs: "1.2rem", md: "1.6rem" },
+                mb: 4,
+                opacity: 0.9,
               }}
             >
               {slides[current].description}
             </Typography>
 
-            <Button
-              variant="contained"
-              size="large"
-              sx={{
-                backgroundColor: "#FFA347",
-                fontWeight: "bold",
-                px: 4,
-                py: 1.5,
-                borderRadius: 3,
-                "&:hover": {
-                  backgroundColor: "#FF7E5F",
-                },
-              }}
-            >
-              Únete al cambio
-            </Button>
+            
           </Box>
         </Stack>
       </Container>
