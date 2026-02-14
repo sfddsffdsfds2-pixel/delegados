@@ -1,14 +1,55 @@
 import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { ConfirmProvider } from 'material-ui-confirm'
+
 import LoginPage from './pages/login/LoginPage'
-import RegisterDelegatePage from './pages/registerDelegate/RegisterDelegate';
+import RegisterDelegatePage from './pages/registerDelegate/RegisterDelegate'
 import DelegatesListPage from './pages/delegatesList/DelegatesListPage'
-import { ConfirmProvider } from 'material-ui-confirm';
 import HomePage from './pages/HomePage'
+
 import Header from './generalComponents/Header'
-import { AuthProvider } from './contexts/AuthContex'
+import { PrivateRoute, PublicRoute} from './generalComponents/Routes'
+import { AuthProvider, useAuth } from './contexts/AuthContex'
 import AppTheme from './shared-theme/AppTheme'
-import { Toolbar } from '@mui/material'
+
+
+/* Contenido principal */
+const AppContent = () => {
+  return (
+    <>
+      <Header />
+
+      <Routes>
+        <Route path="/" element={
+            <HomePage />
+        } />
+
+        <Route
+          path="/iniciar-sesión"
+          element={<PublicRoute element={<LoginPage />} />}
+        />
+
+        <Route
+          path="/registrar-delegado"
+          element={<PublicRoute element={<RegisterDelegatePage />} />}
+        />
+
+        {/* 🔒 Rutas privadas */}
+        <Route
+          path="/lista-delegados"
+          element={
+            <PrivateRoute>
+              <DelegatesListPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="*" element={<div>404</div>} />
+      </Routes>
+    </>
+  )
+}
+
 
 function App() {
   return (
@@ -16,14 +57,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <ConfirmProvider>
-            <Header />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/iniciar-sesión" element={<LoginPage />} />
-              <Route path="/registrar-delegado" element={<RegisterDelegatePage />} />
-              <Route path="/lista-delegados" element={<DelegatesListPage />} />
-              <Route path="*" element={<div>404</div>} />
-            </Routes>
+            <AppContent />
           </ConfirmProvider>
         </BrowserRouter>
       </AuthProvider>

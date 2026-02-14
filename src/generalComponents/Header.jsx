@@ -53,7 +53,7 @@ export default function Header() {
 
       case "/lista-delegados":
         return {
-          backgroundColor: undefined,
+          backgroundColor: "#524a4a",
         };
 
       default:
@@ -175,7 +175,7 @@ export default function Header() {
                     '&:hover': {
                       backgroundColor: "transparent",
                       border: '2px solid #000000',
-                      color: "#000000"
+                      color: "#000000",
                     }
                   }}
                 >
@@ -202,7 +202,7 @@ export default function Header() {
                     transition: "all 0.2s ease-in-out",
                     '&:hover': {
                       backgroundColor: "#000000",
-                      color: '#FFFFFF'
+                      color: '#FFFFFF',
                     }
                   }}
                 >
