@@ -17,7 +17,7 @@ const writeDelegados = (arr) => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
 };
 
-const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
+const DelegatesListJR = memo(function DelegatesList({ rows, setRows }) {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDelegate, setSelectedDelegate] = useState(null);
     const [deleteDelegate, setDeleteDelegate] = useState(false);
@@ -253,4 +253,4 @@ const DelegatesList = memo(function DelegatesList({ rows, setRows }) {
     );
 });
 
-export default DelegatesList;
+export default DelegatesListJR;

@@ -1,5 +1,5 @@
 import { Backdrop, Box, CircularProgress, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
-import DelegatesList from "./components/DelegatesList";
+import DelegatesList from "./components/DelegatesListAdmin";
 import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -56,7 +56,7 @@ const DelegatesListContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-export default function DelegatesListPage() {
+export default function DelegatesListPageJR() {
   const [rows, setRows] = useState(() => readDelegados());
 
   const [searchTypeSelect, setSearchTypeSelect] = useState('ci');

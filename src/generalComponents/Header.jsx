@@ -252,7 +252,7 @@ export default function Header() {
                     {user?.email}
                   </Typography>
 
-                  {getRoleIcon(user?.role)}
+                  {getRoleIcon(user?.rol)}
                 </Button>
                 <Menu
                   id="menu-appbar"

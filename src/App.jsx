@@ -4,7 +4,6 @@ import { ConfirmProvider } from 'material-ui-confirm'
 
 import LoginPage from './pages/login/LoginPage'
 import RegisterDelegatePage from './pages/registerDelegate/RegisterDelegate'
-import DelegatesListPage from './pages/delegatesList/DelegatesListPage'
 import HomePage from './pages/HomePage'
 
 import Header from './generalComponents/Header'
@@ -12,6 +11,7 @@ import { PrivateRoute, PublicRoute } from './generalComponents/Routes'
 import { AuthProvider, useAuth } from './contexts/AuthContex'
 import AppTheme from './shared-theme/AppTheme'
 import { NotificationProvider } from './contexts/NotificationContext'
+import DelegatesListPageAdmin from './pages/delegatesList/DelegatesListPageAdmin'
 
 
 /* Contenido principal */
@@ -44,7 +44,7 @@ const AppContent = () => {
           path="/lista-delegados"
           element={
             <PrivateRoute>
-              <DelegatesListPage />
+              <DelegatesListPageAdmin />
             </PrivateRoute>
           }
         />
