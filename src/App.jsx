@@ -8,11 +8,12 @@ import HomePage from './pages/HomePage'
 
 import Header from './generalComponents/Header'
 import { PrivateRoute, PublicRoute } from './generalComponents/Routes'
-import { AuthProvider, useAuth } from './contexts/AuthContex'
+import { AuthProvider } from './contexts/AuthContex'
 import AppTheme from './shared-theme/AppTheme'
 import { NotificationProvider } from './contexts/NotificationContext'
 import DelegatesListPageAdmin from './pages/delegatesList/DelegatesListPageAdmin'
 import NotFoundPage from './generalComponents/NotFoundPage'
+import DelegatesListPageJR from './pages/delegatesList/DelegatesListPageJR'
 
 
 /* Contenido principal */
@@ -49,12 +50,12 @@ const AppContent = () => {
             </PrivateRoute>
           }
         />
-
+ 
         <Route
           path="/lista-delegados-jr"
           element={
             <PrivateRoute allowedRoles={['jefe_recinto', 'super_admin']}>
-              <DelegatesListPageAdmin />
+              <DelegatesListPageJR />
             </PrivateRoute>
           }
         />

@@ -64,6 +64,9 @@ export const AuthProvider = ({ children }) => {
       const cred = await signInWithEmailAndPassword(auth, cleanEmail, cleanPass);
 
       const profile = await checkRoleByUid(cred.user.uid);
+
+      console.log(profile);
+      
       if (!profile) {
         await signOut(auth);
         clearSession();

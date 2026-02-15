@@ -9,6 +9,7 @@ import data from '../../appConfig/Map.json';
 import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "../../contexts/AuthContex";
 
 const STORAGE_KEY = "delegados";
 
@@ -58,6 +59,7 @@ const DelegatesListContainer = styled(Box)(({ theme }) => ({
 
 export default function DelegatesListPageJR() {
   const [rows, setRows] = useState(() => readDelegados());
+  const { user } = useAuth();
 
   const [searchTypeSelect, setSearchTypeSelect] = useState('ci');
   const [searchText, setSearchText] = useState('');
@@ -236,115 +238,33 @@ export default function DelegatesListPageJR() {
             xs: 'column',
             sm: 'row'
           }} alignItems={'center'} justifyContent={'space-between'}>
-            <Typography
-              sx={{
-                fontSize: {
-                  xs: '1.5rem',
-                  sm: '2.5rem',
-                  textAlign: {
-                    xs: 'center',
-                    sm: 'left'
-                  }
-                },
-                fontWeight: 500,
-              }}
-            >Lista de delegados</Typography>
-            <Box width={{
-              xs: '100%',
-              sm: 'auto'
-            }} display={'flex'} flexDirection={{
-              xs: 'column',
-              sm: 'row'
-            }} gap={1}>
-              <FormControl sx={{
-                minWidth: 150, maxWidth: {
-                  xs: '100%',
-                  lg: 150
-                }
-              }}>
-                <FormLabel>Distrito:</FormLabel>
-                <Select
-                  name="distrito"
-                  value={selectedDistrito}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSelectedDistrito(value);
-
-                    if (value === 'all') {
-                      setSelectedRecinto('all');
-                    } else {
-                      const distritoEncontrado = distritosData.find(
-                        (d) => d.numero === Number(value)
-                      );
-
-                      if (distritoEncontrado?.recintos?.length > 0) {
-                        setSelectedRecinto('all');
-                      } else {
-                        setSelectedRecinto('');
-                      }
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: {
+                    xs: '1.5rem',
+                    sm: '2.5rem',
+                    textAlign: {
+                      xs: 'center',
+                      sm: 'left'
                     }
-                  }}
-                  renderValue={(selected) => (
-                    <Box
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {selected === 'all'
-                        ? 'Todos los distritos'
-                        : `Distrito ${selected}`}
-                    </Box>
-                  )}
+                  },
+                  fontWeight: 500,
+                }}
+              >Lista de delegados</Typography>
+              <Box display={'flex'} gap={1}>
+                <Typography variant="h6" fontWeight={'bold'}>Distrito: </Typography>
+                <Typography variant="caption" color="secondary">{user?.distrito}</Typography>
+              </Box>
+              <Box display={'flex'} gap={1}>
+                <Typography variant="h6" fontWeight={'bold'}>Recinto: </Typography>
+                <Typography>{user?.recinto}</Typography>
+              </Box>
+            </Box>
+            <Box width={{ xs: '100%', sm: 'auto' }} display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1}>
+              <Typography>Jefe de recinto:</Typography>
+              <Typography>{user?.nombre} {user?.apellido}</Typography>
 
-                  required
-                >
-                  <MenuItem value="all">
-                    Todos los distritos
-                  </MenuItem>
-                  {distritosData.map((d) => (
-                    <MenuItem key={d.numero} value={d.numero}>
-                      Distrito {d.numero}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl sx={{
-                minWidth: 200, maxWidth: {
-                  xs: '100%',
-                  lg: 200
-                }
-              }}>
-                <FormLabel>Recinto:</FormLabel>
-                <Select
-                  name="distrito"
-                  value={selectedRecinto}
-                  onChange={(e) => setSelectedRecinto(e.target.value)}
-                  required
-                  disabled={selectedDistrito === 'all'}
-                  renderValue={(selected) => (
-                    <Box
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {selected === 'all' ? 'Todos los recintos' : selected}
-                    </Box>
-                  )}
-                >
-                  <MenuItem value="all">
-                    Todos los recintos
-                  </MenuItem>
-                  {recintosDisponibles.map((r) => (
-                    <MenuItem key={r.nombre} value={r.nombre}>
-                      {r.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
             </Box>
           </Box>
           <Divider />
@@ -439,7 +359,7 @@ export default function DelegatesListPageJR() {
         </Box>
 
         <Box flex={1} minHeight={0}>
-          <DelegatesList rows={filteredRows} setRows={setRows} />
+          <DelegatesListJR rows={filteredRows} setRows={setRows} />
         </Box>
 
       </DelegatesListContainer>
