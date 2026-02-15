@@ -342,6 +342,12 @@ export default function RegisterDelegatePage(props) {
       <CssBaseline enableColorScheme />
       <Container direction="column" justifyContent="center" mt={{ xs: 12, lg: 0 }}>
         <Card variant="outlined" sx={{ overflow: 'auto' }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate(-1)}
+          >
+            Volver
+          </Button>
           <Typography
             component="h1"
             variant="h4"

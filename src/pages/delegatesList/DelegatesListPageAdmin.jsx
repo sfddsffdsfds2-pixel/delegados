@@ -9,6 +9,7 @@ import data from '../../appConfig/Map.json';
 import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const STORAGE_KEY = "delegados";
 
@@ -64,6 +65,8 @@ export default function DelegatesListPageAdmin() {
   const [selectedDistrito, setSelectedDistrito] = useState('all');
   const [selectedRecinto, setSelectedRecinto] = useState('all');
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const distritosData =
     data.departamentos[0]
@@ -361,6 +364,13 @@ export default function DelegatesListPageAdmin() {
                 </Select>
               </FormControl>
             </Box>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/registrar-delegado")}
+            >
+              Registrar delegado
+            </Button>
           </Box>
           <Divider />
           <Box display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1} width={'100%'}>
