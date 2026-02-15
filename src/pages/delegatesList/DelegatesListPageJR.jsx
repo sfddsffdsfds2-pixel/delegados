@@ -223,8 +223,6 @@ export default function DelegatesListPageJR() {
 
   const dynamicPlaceholder = `Introduce el ${formattedLabel}`;
 
-
-
   return (
     <AppTheme mode="dark">
       {
@@ -239,19 +237,6 @@ export default function DelegatesListPageJR() {
             sm: 'row'
           }} alignItems={'center'} justifyContent={'space-between'}>
             <Box>
-              <Typography
-                sx={{
-                  fontSize: {
-                    xs: '1.5rem',
-                    sm: '2.5rem',
-                    textAlign: {
-                      xs: 'center',
-                      sm: 'left'
-                    }
-                  },
-                  fontWeight: 500,
-                }}
-              >Lista de delegados</Typography>
               <Box display={'flex'} gap={1}>
                 <Typography variant="h6" fontWeight={'bold'}>Distrito: </Typography>
                 <Typography variant="caption" color="secondary">{user?.distrito}</Typography>
