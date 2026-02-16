@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from 'react';
-import { Box, IconButton, CssBaseline, Button, Typography } from '@mui/material';
+import { Box, CssBaseline, Button, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -10,6 +10,8 @@ import { db } from "../../../firebase/firebase";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { FullScreenProgress } from '../../../generalComponents/FullScreenProgress';
 import { useNotification } from '../../../contexts/NotificationContext';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 
 const STORAGE_KEY = "delegados";
 
@@ -21,7 +23,7 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDelegate, setSelectedDelegate] = useState(null);
     const [deleteDelegate, setDeleteDelegate] = useState(false);
-    const [ updateDelegate, setUpdateDelegate ] = useState(false);
+    const [updateDelegate, setUpdateDelegate] = useState(false);
     const { notify } = useNotification();
 
     const confirm = useConfirm()
@@ -30,7 +32,6 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
         setSelectedDelegate(row);
         setOpenEdit(true);
     };
-
 
     const handleDelete = (id) => {
         confirm({
@@ -109,6 +110,33 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
     };
 
     const columns = useMemo(() => [
+        {
+            field: 'jefe_recinto',
+            headerName: 'J.R.',
+            description: 'Jefe de recinto',
+            sortable: false,
+            disableColumnMenu: true,
+            headerAlign: 'center',
+            align: 'center',
+            width: 70,
+            maxWidth: 70,
+            renderCell: (params) => {
+                const isJefe = !!params.row.jefe_recinto;
+
+                return (
+                    <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={'center'} width={'100%'} height={'100%'}>
+                        {
+                            isJefe ? (
+
+                                <CheckBoxIcon fontSize='small' color="success" />
+                            ) : (
+                                <CheckBoxOutlineBlankIcon fontSize='small' sx={{ opacity: 0.3 }} />
+                            )
+                        }
+                    </Box>
+                );
+            }
+        },
         {
             field: 'nombre',
             headerName: 'Nombre',
@@ -201,9 +229,9 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
         },
     ], []);
 
-    if(deleteDelegate) return <FullScreenProgress text='Eliminando delegado...' />
+    if (deleteDelegate) return <FullScreenProgress text='Eliminando delegado...' />
 
-    if(updateDelegate) return <FullScreenProgress text='Actualizando delegado...' />
+    if (updateDelegate) return <FullScreenProgress text='Actualizando delegado...' />
 
     return (
         <AppTheme>
@@ -236,6 +264,10 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                             textAlign: 'center',
                         },
                         '& .MuiDataGrid-columnHeader': {
+                            borderRight: '1px solid #1f2937',
+                            backgroundColor: 'rgb(37, 42, 54)'
+                        },
+                        '& .MuiDataGrid-cell': {
                             borderRight: '1px solid #1f2937',
                         },
                     }}

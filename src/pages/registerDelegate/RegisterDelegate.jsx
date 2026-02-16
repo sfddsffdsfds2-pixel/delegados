@@ -23,6 +23,7 @@ import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 import data from '../../appConfig/Map.json';
 import RecintoSelectorModal from '../../generalComponents/SelectRecinto';
 import { useMemo } from 'react';
+import { useEffect } from 'react';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -41,10 +42,35 @@ const Card = styled(MuiCard)(({ theme }) => ({
   },
 }));
 
-const Container = styled(Stack)(({ theme }) => ({
+const Container = styled(Box)(({ theme }) => ({
   minHeight: '89vh',
   maxHeight: 'auto',
-  padding: 16
+  padding: 16,
+  display: 'flex',
+  maxWidth: '100vw',
+  flexDirection: 'column',
+  width: '100vw',
+  maxWidth: '100vw',
+  mt: 4,
+  overflow: 'hidden',
+  padding: theme.spacing(2),
+  [theme.breakpoints.up('sm')]: {
+    paddingX: theme.spacing(2),
+  },
+  '&::before': {
+    content: '""',
+    display: 'block',
+    position: 'absolute',
+    zIndex: -1,
+    inset: 0,
+    backgroundImage:
+      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+    backgroundRepeat: 'no-repeat',
+    ...theme.applyStyles('dark', {
+      backgroundImage:
+        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+    }),
+  },
 }));
 
 export default function RegisterDelegatePage(props) {
@@ -62,15 +88,6 @@ export default function RegisterDelegatePage(props) {
       .provincias[0]
       .municipios[0]
       .distritos;
-
-  const recintosDisponibles = useMemo(() => {
-    if (selectedDistrito === 'all') {
-      return distritosData.flatMap(d => d.recintos || []);
-    } else {
-      return distritosData.find(d => d.numero === Number(selectedDistrito))?.recintos || [];
-    }
-  }, [selectedDistrito, distritosData]);
-
 
   const handleCancelClick = (id) => {
     confirm({
@@ -210,7 +227,7 @@ export default function RegisterDelegatePage(props) {
   if (loading) return <FullScreenProgress text="Registrando delegado..." />
 
   return (
-    <AppTheme {...props}>
+    <AppTheme>
       <CssBaseline enableColorScheme />
       <Toolbar />
       <Container direction="column">
