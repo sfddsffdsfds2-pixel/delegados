@@ -63,8 +63,8 @@ export default function DelegatesListPageAdmin() {
 
   const [searchTypeSelect, setSearchTypeSelect] = useState('ci');
   const [searchText, setSearchText] = useState('');
-  const [selectedDistrito, setSelectedDistrito] = useState(null);
-  const [selectedRecinto, setSelectedRecinto] = useState(null);
+  const [selectedDistrito, setSelectedDistrito] = useState('all');
+  const [selectedRecinto, setSelectedRecinto] = useState('all');
   const [loading, setLoading] = useState(false);
   const { setMode } = useColorScheme();
 
@@ -240,8 +240,12 @@ export default function DelegatesListPageAdmin() {
             xs: 'column',
             sm: 'row'
           }} alignItems={'center'} justifyContent={'space-between'}>
-            <Box>
+            <Box display={'flex'} flexDirection={{
+              xs: 'column',
+              sm: 'row'
+            }} alignItems={'center'} gap={1} mb={1}>
               <Typography
+                lineHeight={1}
                 sx={{
                   fontSize: {
                     xs: '1.5rem',
@@ -254,8 +258,9 @@ export default function DelegatesListPageAdmin() {
               </Typography>
 
               <Typography
+                lineHeight={1}
                 variant="body2"
-                sx={{ opacity: 0.7 }}
+                sx={{ opacity: 0.7, mt: { xs: 0, sm: 3 }, fontSize: '0.7rem' }}
               >
                 {filteredRows.length} delegado{filteredRows.length !== 1 && "s"} encontrados
               </Typography>
@@ -272,27 +277,39 @@ export default function DelegatesListPageAdmin() {
                 variant="outlined"
                 onClick={() => setOpenRecintoModal(true)}
                 sx={{
-                  justifyContent: "flex-start",
+                  gap: 0.5,
+                  alignItems: 'start',
+                  display: 'flex',
+                  flexDirection: 'column',
                   textTransform: "none",
                   overflow: "hidden",
+                  width: {
+                    xs: '100%',
+                    sm: 280
+                  },
                   maxWidth: {
                     xs: '100%',
-                    sm: 300
-                  }
+                    sm: 280
+                  },
                 }}
               >
-                <Box
+                <Typography lineHeight={1} fontSize={10}>Distrito y recinto:</Typography>
+                <Typography
+                  lineHeight={1}
                   sx={{
                     width: "100%",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
+                    fontSize: 12,
+                    textAlign: 'left'
                   }}
+                  color="textSecondary"
                 >
-                  {selectedDistrito && selectedRecinto
-                    ? `Distrito ${selectedDistrito} - ${selectedRecinto}`
-                    : "Seleccionar distrito y recinto"}
-                </Box>
+                  {selectedDistrito === 'all' && selectedRecinto === 'all'
+                    ? "Todos los distritos y todos los recintos"
+                    : `Distrito ${selectedDistrito} - ${selectedRecinto}`}
+                </Typography>
               </Button>
 
             </Box>
@@ -397,6 +414,7 @@ export default function DelegatesListPageAdmin() {
         open={openRecintoModal}
         onClose={() => setOpenRecintoModal(false)}
         distritosData={distritosData}
+        showInDelegatesList
         onSelect={({ recinto, distrito }) => {
           setSelectedDistrito(distrito);
           setSelectedRecinto(recinto);

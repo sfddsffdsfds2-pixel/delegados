@@ -26,7 +26,8 @@ export default function RecintoSelectorModal({
     open,
     onClose,
     distritosData,
-    onSelect
+    onSelect,
+    showInDelegatesList = false
 }) {
     const [selectedDistrito, setSelectedDistrito] = useState("all");
     const [search, setSearch] = useState("");
@@ -70,16 +71,22 @@ export default function RecintoSelectorModal({
         onClose();
     };
 
+    const distritoSeleccionado = distritosData.find(
+        (d) => d.numero === Number(selectedDistrito)
+    );
+
     return (
         <Dialog
             open={open}
             onClose={onClose}
             fullWidth
             maxWidth="md"
-            PaperProps={{
-                sx: {
-                    borderRadius: 3,
-                    minHeight: '90vh',
+            slotProps={{
+                paper: {
+                    sx: {
+                        borderRadius: 3,
+                        minHeight: '90vh',
+                    }
                 }
             }}
         >
@@ -172,9 +179,17 @@ export default function RecintoSelectorModal({
                                 backgroundColor: "background.default",
                             }}
                         >
-                            <Box display="flex" alignItems="center" mb={2}>
+                            <Box
+                                sx={{
+                                    position: "sticky",
+                                    top: 0,
+                                    zIndex: 2,
+                                    backgroundColor: "background.default",
+                                    py: 1
+                                }}
+                            >
                                 <Chip
-                                    label={`Distrito ${selectedDistrito}`}
+                                    label={`Distrito ${distritoSeleccionado?.numero}`}
                                     color="primary"
                                     size="small"
                                     sx={{ fontWeight: 600 }}
@@ -300,13 +315,24 @@ export default function RecintoSelectorModal({
 
 
             <DialogActions sx={{ p: 2 }}>
-                <Button
-                    onClick={onClose}
-                    variant="outlined"
-                    color="inherit"
-                >
-                    Cerrar
-                </Button>
+                {showInDelegatesList &&
+                    <Button
+                        onClick={() => handleSelectRecinto('all', 'all')}
+                        variant="outlined"
+                        color="inherit"
+                    >
+                        Mostrar todos los distritos y recintos
+                    </Button>
+                }
+                {!showInDelegatesList &&
+                    <Button
+                        onClick={onClose}
+                        variant="outlined"
+                        color="inherit"
+                    >
+                        Cerrar
+                    </Button>
+                }
             </DialogActions>
         </Dialog>
     );
