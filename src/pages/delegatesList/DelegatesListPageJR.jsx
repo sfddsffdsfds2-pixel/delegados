@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../contexts/AuthContex";
 import { db } from "../../firebase/firebase";
 import { doc, updateDoc, deleteField } from "firebase/firestore";
+import { useLocation } from "react-router-dom";
 
 const STORAGE_KEY = (uid) => `delegados_${uid || "anon"}`;
 
@@ -72,6 +73,10 @@ export default function DelegatesListPageJR() {
   const [changedMap, setChangedMap] = useState({});
 
   const changedRef = useRef(new Set());
+  const location = useLocation();
+  const viewJR = location.state || null;
+
+  const isAdminView = !!(viewJR?.distrito && viewJR?.recinto);
 
   const distritosData =
     data.departamentos[0]
@@ -80,8 +85,8 @@ export default function DelegatesListPageJR() {
       .distritos;
 
   const mesaMax = useMemo(() => {
-    const distritoNum = Number(user?.distrito);
-    const recintoName = String(user?.recinto || "").trim();
+    const distritoNum = Number(isAdminView ? viewJR?.distrito : user?.distrito);
+    const recintoName = String(isAdminView ? viewJR?.recinto : (user?.recinto || "")).trim();
 
     if (!recintoName || Number.isNaN(distritoNum)) return 0;
 
@@ -90,7 +95,7 @@ export default function DelegatesListPageJR() {
 
     const m = Number(recintoObj?.mesas);
     return Number.isFinite(m) ? m : 0;
-  }, [user?.distrito, user?.recinto, distritosData]);
+  }, [isAdminView, viewJR?.distrito, viewJR?.recinto, user?.distrito, user?.recinto, distritosData]);
 
   const [appliedFilters, setAppliedFilters] = useState({
     searchText: '',
@@ -168,8 +173,30 @@ export default function DelegatesListPageJR() {
 
       setChangedMap({});
       changedRef.current.clear();
-      sessionStorage.setItem(STORAGE_KEY(user?.uid), JSON.stringify(rows));
 
+      if (isAdminView) {
+        try {
+          const raw = sessionStorage.getItem("delegados");
+          const all = raw ? JSON.parse(raw) : [];
+
+          const map = new Map(
+            Array.isArray(all)
+              ? all.map((d) => [String(d.id ?? d.ci), { ...d, id: d.id ?? d.ci }])
+              : []
+          );
+
+          rows.forEach((r) => {
+            const id = String(r.id ?? r.ci);
+            map.set(id, { ...map.get(id), ...r, id });
+          });
+
+          sessionStorage.setItem("delegados", JSON.stringify(Array.from(map.values())));
+        } catch (e) {
+          console.warn("No se pudo actualizar sessionStorage delegados", e);
+        }
+      } else {
+        sessionStorage.setItem(STORAGE_KEY(user?.uid), JSON.stringify(rows));
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -187,6 +214,26 @@ export default function DelegatesListPageJR() {
   }, [searchText]);
 
   useEffect(() => {
+    if (isAdminView) {
+      const distrito = Number(viewJR.distrito);
+      const recinto = String(viewJR.recinto || "").trim();
+
+      setSelectedDistrito(String(distrito));
+      setSelectedRecinto(recinto);
+
+      const raw = sessionStorage.getItem("delegados");
+      const all = raw ? JSON.parse(raw) : [];
+
+      const filtered = Array.isArray(all)
+        ? all
+            .map((d) => ({ ...d, id: d.id ?? d.ci }))
+            .filter((d) => Number(d.distrito) === distrito && String(d.recinto) === recinto)
+        : [];
+
+      setRows(filtered);
+      return;
+    }
+
     if (!user?.uid) return;
 
     const distrito = Number(user?.distrito);
@@ -197,7 +244,14 @@ export default function DelegatesListPageJR() {
     setSelectedRecinto(recinto);
 
     setRows(readDelegados(user.uid));
-  }, [user?.uid, user?.distrito, user?.recinto]);
+  }, [
+    isAdminView,
+    viewJR?.distrito,
+    viewJR?.recinto,
+    user?.uid,
+    user?.distrito,
+    user?.recinto,
+  ]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -260,6 +314,12 @@ export default function DelegatesListPageJR() {
 
   const dynamicPlaceholder = `Introduce el ${formattedLabel}`;
 
+  const headerDistrito = isAdminView ? viewJR?.distrito : user?.distrito;
+  const headerRecinto  = isAdminView ? viewJR?.recinto  : user?.recinto;
+  const headerNombre   = isAdminView
+    ? `${viewJR?.nombre || ""} ${viewJR?.apellido || ""}`.trim()
+    : `${user?.nombre || ""} ${user?.apellido || ""}`.trim();
+
   return (
     <AppTheme mode="dark">
       {loading && <FullScreenProgress text={'Realizando búsqueda'} />}
@@ -278,15 +338,18 @@ export default function DelegatesListPageJR() {
             <Box>
               <Box display={'flex'} gap={1}>
                 <Typography variant="h6" fontWeight={'bold'}>Distrito: </Typography>
-                <Typography variant="caption" color="secondary">{user?.distrito}</Typography>
+                <Typography variant="caption" color="secondary">{headerDistrito}</Typography>
               </Box>
 
               <Box display={'flex'} gap={1}>
                 <Typography variant="h6" fontWeight={'bold'}>Recinto: </Typography>
-                <Typography>{user?.recinto}</Typography>
+                <Typography>{headerRecinto}</Typography>
               </Box>
-              <Typography>Jefe de recinto:</Typography>
-              <Typography>{user?.nombre} {user?.apellido}</Typography>
+
+              <Box display={'flex'} gap={1}>
+                <Typography>{isAdminView ? "Vista admin:" : "Jefe de recinto:"}</Typography>
+                <Typography>{headerNombre}</Typography>
+              </Box>
             </Box>
 
             <Box width={{ xs: '100%', sm: 'auto' }} display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1}>

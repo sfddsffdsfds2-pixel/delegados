@@ -232,8 +232,15 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                                 variant="outlined"
                                 size="small"
                                 onClick={(e) => {
-                                    e.stopPropagation();
-                                    navigate(`/lista-delegados-jr`);
+                                  e.stopPropagation();
+                                  navigate("/lista-delegados-jr", {
+                                    state: {
+                                      distrito: String(params.row.distrito),
+                                      recinto: String(params.row.recinto),
+                                      nombre: String(params.row.nombre || ""),
+                                      apellido: String(params.row.apellido || ""),
+                                    },
+                                  });
                                 }}
                                 sx={{
                                     flex: 1,

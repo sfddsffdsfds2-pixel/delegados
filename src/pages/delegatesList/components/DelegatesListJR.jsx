@@ -281,7 +281,7 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0
 
             <Box sx={{ height: '100%', width: '100%' }}>
                 <DataGrid
-                    rows={rows}
+                    rows={rows.filter(r => !r?.jefe_recinto)}
                     columns={columns}
                     pageSizeOptions={[50, 100]}
                     disableColumnResize
