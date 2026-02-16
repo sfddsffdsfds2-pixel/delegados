@@ -8,6 +8,7 @@ import { useColorScheme } from '@mui/material/styles';
 import data from '../../appConfig/Map.json';
 import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 
+
 import { useEffect, useMemo, useState } from "react";
 import RecintoSelectorModal from "../../generalComponents/SelectRecinto";
 

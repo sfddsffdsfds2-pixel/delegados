@@ -1,0 +1,11 @@
+[
+  { "code": "CH", "label": "Chuquisaca" },
+  { "code": "LP", "label": "La Paz" },
+  { "code": "CB", "label": "Cochabamba" },
+  { "code": "OR", "label": "Oruro" },
+  { "code": "PT", "label": "Potosí" },
+  { "code": "TJ", "label": "Tarija" },
+  { "code": "SC", "label": "Santa Cruz" },
+  { "code": "BN", "label": "Beni" },
+  { "code": "PD", "label": "Pando" }
+]

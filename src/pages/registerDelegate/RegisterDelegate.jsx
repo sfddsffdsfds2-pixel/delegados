@@ -6,7 +6,6 @@ import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -22,12 +21,10 @@ import { useNotification } from '../../contexts/NotificationContext';
 import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 import data from '../../appConfig/Map.json';
 import RecintoSelectorModal from '../../generalComponents/SelectRecinto';
-import { useMemo } from 'react';
-import { auth } from "../../firebase/firebase";
+import ciExtensions from "../../appConfig/CIExt.json";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { useEffect } from 'react';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -119,6 +116,7 @@ export default function RegisterDelegatePage(props) {
     nombre: '',
     apellido: '',
     ci: '',
+    ciExtension: '',
     telefono: '',
     distrito: '',
     recinto: '',
@@ -168,6 +166,9 @@ export default function RegisterDelegatePage(props) {
     if (loading) return;
 
     const ciClean = String(formData.ci).trim().replace(/\s+/g, "");
+    const ciFinal = formData.ciExtension
+      ? `${ciClean} ${formData.ciExtension}`
+      : ciClean;
     const distNum = Number(formData.distrito);
 
     const isJR = formData.rol === "jefe_recinto";
@@ -175,7 +176,7 @@ export default function RegisterDelegatePage(props) {
     const clean = {
       nombre: formData.nombre.trim(),
       apellido: formData.apellido.trim(),
-      ci: ciClean,
+      ci: ciFinal,
       telefono: formData.telefono.trim(),
       distrito: distNum,
       recinto: formData.recinto,
@@ -303,7 +304,7 @@ export default function RegisterDelegatePage(props) {
                     fullWidth
                   />
                 </FormControl>
- 
+
                 <FormControl fullWidth>
                   <FormLabel>Apellido:</FormLabel>
                   <TextField
@@ -322,13 +323,36 @@ export default function RegisterDelegatePage(props) {
               }}>
                 <FormControl fullWidth>
                   <FormLabel>Cédula de Identidad:</FormLabel>
-                  <TextField
-                    name="ci"
-                    value={formData.ci}
-                    onChange={handleChange}
-                    required
-                    fullWidth
-                  />
+
+                  <Box display="flex" gap={1}>
+                    <TextField
+                      name="ci"
+                      value={formData.ci}
+                      onChange={handleChange}
+                      required
+                      fullWidth
+                    />
+
+                    <FormControl sx={{ minWidth: 110 }}>
+                      <Select
+                        name="ciExtension"
+                        value={formData.ciExtension}
+                        onChange={handleChange}
+                        displayEmpty
+                        size="small"
+                        renderValue={(selected) => {
+                          if (!selected) return "Ext.";
+                          return selected;
+                        }}
+                      >
+                        {ciExtensions.map((ext) => (
+                          <MenuItem key={ext.code} value={ext.code}>
+                            {ext.code} - {ext.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
                 </FormControl>
 
                 <FormControl fullWidth>
@@ -342,6 +366,7 @@ export default function RegisterDelegatePage(props) {
                   />
                 </FormControl>
               </Box>
+
 
               <Box display={'flex'} gap={1} flexDirection={{
                 xs: 'column',
