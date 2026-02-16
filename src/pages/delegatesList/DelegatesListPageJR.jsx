@@ -8,7 +8,7 @@ import { useColorScheme } from '@mui/material/styles';
 import data from '../../appConfig/Map.json';
 import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../contexts/AuthContex";
 import { db } from "../../firebase/firebase";
 import { doc, updateDoc, deleteField } from "firebase/firestore";
@@ -67,9 +67,11 @@ export default function DelegatesListPageJR() {
   const [selectedDistrito, setSelectedDistrito] = useState('all');
   const [selectedRecinto, setSelectedRecinto] = useState('all');
   const [loading, setLoading] = useState(false);
-  
+
   const [saving, setSaving] = useState(false);
   const [changedMap, setChangedMap] = useState({});
+
+  const changedRef = useRef(new Set());
 
   const distritosData =
     data.departamentos[0]
@@ -126,6 +128,55 @@ export default function DelegatesListPageJR() {
     });
   };
 
+  const markChanged = (id) => {
+    const key = String(id);
+    changedRef.current.add(key);
+    setChangedMap((prev) => ({ ...prev, [key]: true }));
+  };
+
+  const handleSaveChanges = async () => {
+    if (saving) return;
+
+    const ids = Array.from(changedRef.current);
+    if (!ids.length) return;
+
+    try {
+      setSaving(true);
+
+      const toSave = rows.filter((r) => ids.includes(String(r.id)));
+
+      await Promise.all(
+        toSave.map(async (r) => {
+          const ref = doc(db, "delegados", String(r.id));
+
+          const payload = {
+            asistencia: !!r.asistencia,
+            pago: !!r.pago,
+          };
+
+          const mesaRaw = r.mesa;
+          if (mesaRaw === "" || mesaRaw == null) {
+            payload.mesa = deleteField();
+          } else {
+            const mesaNum = Number(mesaRaw);
+            if (!Number.isNaN(mesaNum)) payload.mesa = mesaNum;
+          }
+
+          await updateDoc(ref, payload);
+        })
+      );
+
+      setChangedMap({});
+      changedRef.current.clear();
+      sessionStorage.setItem(STORAGE_KEY(user?.uid), JSON.stringify(rows));
+
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   useEffect(() => {
     if (searchText.trim() === '' && appliedFilters.searchText !== '') {
       setAppliedFilters({
@@ -135,7 +186,6 @@ export default function DelegatesListPageJR() {
     }
   }, [searchText]);
 
-  // ✅ SOLO CACHE: 0 lecturas
   useEffect(() => {
     if (!user?.uid) return;
 
@@ -240,8 +290,8 @@ export default function DelegatesListPageJR() {
             </Box>
 
             <Box width={{ xs: '100%', sm: 'auto' }} display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1}>
-              <Button>
-                Guardar cambios
+              <Button onClick={handleSaveChanges} disabled={saving}>
+                {saving ? "Guardando..." : "Guardar cambios"}
               </Button>
             </Box>
           </Box>
@@ -313,7 +363,12 @@ export default function DelegatesListPageJR() {
         </Box>
 
         <Box flex={1} minHeight={0}>
-          <DelegatesListJR rows={filteredRows} setRows={setRows} mesaMax={mesaMax} />
+          <DelegatesListJR
+            rows={filteredRows}
+            setRows={setRows}
+            mesaMax={mesaMax}
+            markChanged={markChanged}
+          />
         </Box>
       </DelegatesListContainer>
     </AppTheme>

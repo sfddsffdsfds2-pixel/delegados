@@ -17,7 +17,7 @@ const writeDelegados = (arr) => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
 };
 
-const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0 }) {
+const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0, markChanged }) {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDelegate, setSelectedDelegate] = useState(null);
     const [deleteDelegate, setDeleteDelegate] = useState(false);
@@ -199,6 +199,8 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0
                     writeDelegados(next);
                     return next;
                   });
+
+                  if (markChanged) markChanged(rowId);
                 }}
                 sx={{ width: 85 }}
               >
@@ -226,19 +228,19 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0
             headerAlign: 'center',
             align: 'center',
             renderCell: (params) => (
-                <input
-                    type="checkbox"
-                    checked={!!params.value}
-                    onChange={(e) => {
-                        const updatedRow = { ...params.row, asistencia: e.target.checked };
-                        setRows((prev) =>
-                            prev.map((r) =>
-                                r.id === params.row.id ? updatedRow : r
-                            )
-                        );
+              <input
+                type="checkbox"
+                checked={!!params.value}
+                onChange={(e) => {
+                  const updatedRow = { ...params.row, asistencia: e.target.checked };
 
-                    }}
-                />
+                  setRows((prev) =>
+                    prev.map((r) => (r.id === params.row.id ? updatedRow : r))
+                  );
+
+                  if (markChanged) markChanged(params.row.id);
+                }}
+              />
             )
         },
         {
@@ -252,21 +254,22 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0
             headerAlign: 'center',
             align: 'center',
             renderCell: (params) => (
-                <input
-                    type="checkbox"
-                    checked={!!params.value}
-                    onChange={(e) => {
-                        const updatedRow = { ...params.row, pago: e.target.checked };
-                        setRows((prev) =>
-                            prev.map((r) =>
-                                r.id === params.row.id ? updatedRow : r
-                            )
-                        );
-                    }}
-                />
+              <input
+                type="checkbox"
+                checked={!!params.value}
+                onChange={(e) => {
+                  const updatedRow = { ...params.row, pago: e.target.checked };
+
+                  setRows((prev) =>
+                    prev.map((r) => (r.id === params.row.id ? updatedRow : r))
+                  );
+
+                  if (markChanged) markChanged(params.row.id);
+                }}
+              />
             )
         },
-    ], [mesaMax, usedMesas, setRows]);
+    ], [mesaMax, usedMesas, setRows, markChanged]);
 
     if (deleteDelegate) return <FullScreenProgress text='Eliminando delegado...' />
 
