@@ -86,15 +86,6 @@ export default function DelegatesListPageAdmin() {
     setSearchTypeSelect(e.target.value);
   };
 
-  const recintosDisponibles = useMemo(() => {
-    if (selectedDistrito === 'all') {
-      // Todos los recintos de todos los distritos
-      return distritosData.flatMap(d => d.recintos || []);
-    } else {
-      return distritosData.find(d => d.numero === Number(selectedDistrito))?.recintos || [];
-    }
-  }, [selectedDistrito, distritosData]);
-
   const searchType = [
     { key: 'ci', label: 'C.I.' },
     { key: 'nombre', label: 'Nombre o apellido' },
