@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
+import { Backdrop, Box, CircularProgress, Container, CssBaseline, Divider, FormControl, FormLabel, InputLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
 import DelegatesListAdmin from "./components/DelegatesListAdmin";
 import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
@@ -66,6 +66,8 @@ export default function DelegatesListPageAdmin() {
   const [selectedDistrito, setSelectedDistrito] = useState('all');
   const [selectedRecinto, setSelectedRecinto] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [mostrarFiltro, setMostrarFiltro] = useState('all');
+
   const { setMode } = useColorScheme();
 
 
@@ -127,6 +129,11 @@ export default function DelegatesListPageAdmin() {
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
 
+      // 🔹 FILTRO MOSTRAR (JR o todos)
+      if (mostrarFiltro === 'jr' && !row.jefe_recinto) {
+        return false;
+      }
+
       // 🔹 FILTRO DISTRITO
       if (
         selectedDistrito !== 'all' &&
@@ -177,7 +184,8 @@ export default function DelegatesListPageAdmin() {
     rows,
     selectedDistrito,
     selectedRecinto,
-    appliedFilters
+    appliedFilters,
+    mostrarFiltro
   ]);
 
 
@@ -303,11 +311,56 @@ export default function DelegatesListPageAdmin() {
                 </Typography>
               </Button>
 
-              <FormControl fullWidth>
+              <FormControl
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: 120
+                  },
+                  maxWidth: {
+                    xs: '100%',
+                    sm: 120
+                  },
+                }}
+                size="small"
+              >
+                <InputLabel id="mostrar-label">Filtrar</InputLabel>
                 <Select
+                  labelId="mostrar-label"
                   label="Mostrar"
-                />
+                  value={mostrarFiltro}
+                  onChange={(e) => setMostrarFiltro(e.target.value)}
+                  renderValue={(selected) => {
+                    const labels = {
+                      all: "Todos",
+                      jr: "Solo J.R",
+                    };
+
+                    return (
+                      <Box
+                        sx={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {labels[selected]}
+                      </Box>
+                    );
+                  }}
+                  sx={{
+                    "& .MuiSelect-select": {
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    },
+                  }}
+                >
+                  <MenuItem value="all">Todos</MenuItem>
+                  <MenuItem value="jr">Solo J.R.</MenuItem>
+                </Select>
               </FormControl>
+
 
             </Box>
           </Box>
@@ -350,7 +403,7 @@ export default function DelegatesListPageAdmin() {
               </Select>
             </FormControl>
 
-            <Box display="flex" width={'100%'} gap={2} alignItems="flex-end" mt={2}>
+            <Box display="flex" width={'100%'} gap={2} alignItems="flex-end" mt={0}>
               <TextField
                 fullWidth
                 label={dynamicPlaceholder}
