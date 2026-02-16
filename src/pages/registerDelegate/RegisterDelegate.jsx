@@ -303,7 +303,7 @@ export default function RegisterDelegatePage(props) {
                     fullWidth
                   />
                 </FormControl>
-
+ 
                 <FormControl fullWidth>
                   <FormLabel>Apellido:</FormLabel>
                   <TextField

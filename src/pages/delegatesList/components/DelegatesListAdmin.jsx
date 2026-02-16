@@ -12,6 +12,8 @@ import { FullScreenProgress } from '../../../generalComponents/FullScreenProgres
 import { useNotification } from '../../../contexts/NotificationContext';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
 
 const STORAGE_KEY = "delegados";
 
@@ -25,6 +27,7 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
     const [deleteDelegate, setDeleteDelegate] = useState(false);
     const [updateDelegate, setUpdateDelegate] = useState(false);
     const { notify } = useNotification();
+    const navigate = useNavigate();
 
     const confirm = useConfirm()
 
@@ -118,8 +121,8 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
             disableColumnMenu: true,
             headerAlign: 'center',
             align: 'center',
-            width: 70,
-            maxWidth: 70,
+            width: 50,
+            maxWidth: 50,
             renderCell: (params) => {
                 const isJefe = !!params.row.jefe_recinto;
 
@@ -127,7 +130,6 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                     <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={'center'} width={'100%'} height={'100%'}>
                         {
                             isJefe ? (
-
                                 <CheckBoxIcon fontSize='small' color="success" />
                             ) : (
                                 <CheckBoxOutlineBlankIcon fontSize='small' sx={{ opacity: 0.3 }} />
@@ -202,8 +204,8 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
             field: 'mesa',
             headerName: 'Mesa',
             flex: 1,
-            maxWidth: 80,
-            minWidth: 80,
+            maxWidth: 60,
+            minWidth: 60,
             sortable: false,
             disableColumnMenu: true,
             headerAlign: 'center',
@@ -214,17 +216,70 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
             headerName: 'Acciones',
             sortable: false,
             disableColumnMenu: true,
-            renderCell: (params) => (
-                <Box display={'flex'} gap={1} alignItems={'center'} justifyContent={'center'} width={'100%'} height={'100%'}>
-                    <Button variant='outlined' onClick={(e) => { e.stopPropagation(); handleEdit(params.row) }}>
-                        <Typography mr={1}>Editar</Typography> <EditIcon fontSize='small' color='success' />
-                    </Button>
-                    <Button variant='outlined' onClick={(e) => { e.stopPropagation(); handleDelete(params.row.id) }}>
-                        <Typography mr={1}>Eliminar</Typography> <DeleteIcon fontSize='small' color='error' />
-                    </Button>
-                </Box>
-            ),
+            renderCell: (params) => {
+                const isJefe = !!params.row.jefe_recinto;
+
+                return (
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        width="100%"
+                        height="100%"
+                        gap={1}
+                    >
+                        {isJefe && (
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/lista-delegados-jr`);
+                                }}
+                                sx={{
+                                    flex: 1,
+                                    minWidth: 0,
+                                    px: 1,
+                                }}
+                            >
+                                <VisibilityIcon fontSize="small" />
+                            </Button>
+                        )}
+
+                        <Button
+                            variant="outlined"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(params.row);
+                            }}
+                            sx={{
+                                flex: 2, 
+                                minWidth: 0,
+                            }}
+                        >
+                            <Typography mr={0.5}>Editar</Typography>
+                            <EditIcon fontSize="small" color="success" />
+                        </Button>
+
+                        <Button
+                            variant="outlined"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(params.row.id);
+                            }}
+                            sx={{
+                                flex: 2,
+                                minWidth: 0,
+                            }}
+                        >
+                            <Typography mr={0.5}>Eliminar</Typography>
+                            <DeleteIcon fontSize="small" color="error" />
+                        </Button>
+                    </Box>
+
+                )
+            },
             minWidth: 250,
+            maxWidth: 250,
             headerAlign: 'center',
         },
     ], []);

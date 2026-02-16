@@ -303,6 +303,12 @@ export default function DelegatesListPageAdmin() {
                 </Typography>
               </Button>
 
+              <FormControl fullWidth>
+                <Select
+                  label="Mostrar"
+                />
+              </FormControl>
+
             </Box>
           </Box>
           <Divider />
