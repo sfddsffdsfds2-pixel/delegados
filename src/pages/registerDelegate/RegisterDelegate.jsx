@@ -23,6 +23,10 @@ import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 import data from '../../appConfig/Map.json';
 import RecintoSelectorModal from '../../generalComponents/SelectRecinto';
 import { useMemo } from 'react';
+import { auth } from "../../firebase/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -135,6 +139,12 @@ export default function RegisterDelegatePage(props) {
     }));
   };
 
+  const secondaryAuth = React.useMemo(() => {
+    const mainApp = getApps()[0];
+    const name = "secondary";
+    const secApp = getApps().find(a => a.name === name) || initializeApp(mainApp.options, name);
+    return getAuth(secApp);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,6 +154,8 @@ export default function RegisterDelegatePage(props) {
     const ciClean = String(formData.ci).trim().replace(/\s+/g, "");
     const distNum = Number(formData.distrito);
 
+    const isJR = formData.rol === "jefe_recinto";
+
     const clean = {
       nombre: formData.nombre.trim(),
       apellido: formData.apellido.trim(),
@@ -152,6 +164,8 @@ export default function RegisterDelegatePage(props) {
       distrito: distNum,
       recinto: formData.recinto,
       createdAt: serverTimestamp(),
+
+      jefe_recinto: isJR,
     };
 
     if (
@@ -168,6 +182,31 @@ export default function RegisterDelegatePage(props) {
 
     try {
       setIsLoading(true);
+
+      let jrUid = null;
+
+      if (isJR) {
+        const emailJR = String(formData.password || "").trim().toLowerCase();
+        const passJR = String(formData.confirmPassword || "").trim();
+
+        if (!emailJR || !passJR) {
+          notify("Completa correo y contraseña para el jefe de recinto.", "info");
+          setIsLoading(false);
+          return;
+        }
+
+        const cred = await createUserWithEmailAndPassword(secondaryAuth, emailJR, passJR);
+        jrUid = cred.user.uid;
+
+        await setDoc(doc(db, "admin", jrUid), {
+          email: emailJR,
+          rol: "jefe_recinto",
+          distrito: String(distNum),
+          recinto: formData.recinto,
+          createdAt: serverTimestamp(),
+        });
+      }
+
       const ref = doc(db, "delegados", ciClean);
 
       await runTransaction(db, async (tx) => {
