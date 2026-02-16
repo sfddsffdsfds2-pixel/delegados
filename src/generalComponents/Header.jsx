@@ -3,13 +3,16 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
+import MenuIcon from '@mui/icons-material/Menu';
+import { IconButton } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { useAuth } from '../contexts/AuthContex';
 import { Button } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
+import NavBar from './NavBar';
+import CloseIcon from '@mui/icons-material/Close';
 import { getRoleIcon } from '../appConfig/RoleConfig';
 import { useNotification } from '../contexts/NotificationContext';
 
@@ -21,7 +24,16 @@ export default function Header() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/iniciar-sesion";
   const isRegisterDelegatePage = location.pathname === "/registrar-delegado";
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const { notify } = useNotification();
+
+  const toggleDrawer = () => {
+    setDrawerOpen(prev => !prev);
+  };
+
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
+  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -52,7 +64,7 @@ export default function Header() {
 
       case "/registrar-delegado":
         return {
-          backgroundColor: "transparent"
+          backgroundColor: "rgb(37, 42, 54)",
         };
 
       case "/lista-delegados":
@@ -76,7 +88,7 @@ export default function Header() {
         return 0;
 
       case "/registrar-delegado":
-        return 0;
+        return 3;
 
       case "/lista-delegados":
         return 3;
@@ -88,11 +100,11 @@ export default function Header() {
 
 
   const getButtonStylesByRoute = (route, type, buttonType) => {
-  switch (route) {
-    case '/':
-      if (buttonType === 'register') {
-        return type === 'outlined'
-          ? {
+    switch (route) {
+      case '/':
+        if (buttonType === 'register') {
+          return type === 'outlined'
+            ? {
               color: '#FFFFFF',
               border: '2px solid #FFFFFF',
               '&:hover': {
@@ -101,7 +113,7 @@ export default function Header() {
                 border: '2px solid #FF7E5F',
               },
             }
-          : {
+            : {
               backgroundColor: '#000000',
               color: '#FFFFFF',
               '&:hover': {
@@ -109,9 +121,9 @@ export default function Header() {
                 color: '#000000',
               },
             };
-      } else if (buttonType === 'login') {
-        return type === 'outlined'
-          ? {
+        } else if (buttonType === 'login') {
+          return type === 'outlined'
+            ? {
               color: '#FFFFFF',
               border: '2px solid #FFFFFF',
               '&:hover': {
@@ -120,7 +132,7 @@ export default function Header() {
                 backgroundColor: 'transparent',
               },
             }
-          : {
+            : {
               backgroundColor: '#FF7E5F',
               color: '#FFFFFF',
               '&:hover': {
@@ -128,13 +140,13 @@ export default function Header() {
                 color: '#FF7E5F',
               },
             };
-      }
-      break;
+        }
+        break;
 
-    case '/registrar-delegado':
-      if (buttonType === 'register') {
-        return type === 'outlined'
-          ? {
+      case '/registrar-delegado':
+        if (buttonType === 'register') {
+          return type === 'outlined'
+            ? {
               color: '#000000',
               border: '2px solid #000000',
               '&:hover': {
@@ -143,7 +155,7 @@ export default function Header() {
                 border: '2px solid #FFFFFF',
               },
             }
-          : {
+            : {
               backgroundColor: '#FFFFFF',
               color: '#0088FF',
               '&:hover': {
@@ -151,9 +163,9 @@ export default function Header() {
                 color: '#FFFFFF',
               },
             };
-      } else if (buttonType === 'login') {
-        return type === 'outlined'
-          ? {
+        } else if (buttonType === 'login') {
+          return type === 'outlined'
+            ? {
               color: '#FFFFFF',
               border: '2px solid #FFFFFF',
               '&:hover': {
@@ -162,7 +174,7 @@ export default function Header() {
                 backgroundColor: 'transparent',
               },
             }
-          : {
+            : {
               backgroundColor: '#FFFFFF',
               color: '#000000',
               '&:hover': {
@@ -170,11 +182,11 @@ export default function Header() {
                 color: '#FFFFFF',
               },
             };
-      }
+        }
 
-    default:
-      return type === 'outlined'
-        ? {
+      default:
+        return type === 'outlined'
+          ? {
             color: '#FFFFFF',
             border: '2px solid #FFFFFF',
             '&:hover': {
@@ -183,7 +195,7 @@ export default function Header() {
               backgroundColor: 'transparent',
             },
           }
-        : {
+          : {
             backgroundColor: '#FFFFFF',
             color: '#000000',
             '&:hover': {
@@ -191,8 +203,8 @@ export default function Header() {
               color: '#FFFFFF',
             },
           };
-  }
-};
+    }
+  };
 
 
   return (
@@ -205,7 +217,20 @@ export default function Header() {
           transition: "all 0.3s ease-in-out"
         }}>
         <Toolbar>
-          <Box display={'flex'} p={{ xs: 0, lg: 0 }} flexDirection={{
+          {(isAuthenticated && user) && (
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 1 }}
+              onClick={toggleDrawer}
+            >
+              {drawerOpen ? <CloseIcon /> : <MenuIcon />}
+            </IconButton>
+          )}
+
+          <Box display={'flex'} p={0} flexDirection={{
             xs: isAuthenticated ? 'row' : 'column',
             sm: 'row'
           }} width={'100%'} justifyContent={'space-between'} alignItems={'center'}>
@@ -224,7 +249,7 @@ export default function Header() {
                   sx={{
                     height: {
                       xs: 80,
-                      lg: 100
+                      lg: 90
                     },
                     width: "auto",
                     mr: 2
@@ -343,6 +368,7 @@ export default function Header() {
           </Box>
         </Toolbar>
       </AppBar>
+      <NavBar open={drawerOpen} onClose={handleDrawerClose} />
     </Box>
   );
 }
