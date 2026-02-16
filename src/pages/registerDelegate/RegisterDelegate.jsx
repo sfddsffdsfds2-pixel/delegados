@@ -51,7 +51,6 @@ const Container = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   width: '100vw',
   maxWidth: '100vw',
-  mt: 4,
   overflow: 'hidden',
   padding: theme.spacing(2),
   [theme.breakpoints.up('sm')]: {
@@ -91,9 +90,9 @@ export default function RegisterDelegatePage(props) {
 
   const handleCancelClick = (id) => {
     confirm({
-      title: "Borrar delegado",
+      title: "Cancelar creación de delegado",
       description: "¿Está seguro que desea cancelar la creación del delegado?",
-      confirmationText: "Sí, borrar",
+      confirmationText: "Sí, cancelar",
       cancellationText: "No",
     })
       .then(async (result) => {
