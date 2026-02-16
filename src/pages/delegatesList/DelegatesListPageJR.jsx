@@ -1,7 +1,7 @@
-import { Backdrop, Box, CircularProgress, Container, CssBaseline, Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
+import { Box, CircularProgress, CssBaseline,  Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
 import DelegatesListJR from "./components/DelegatesListJR";
 import AppTheme from "../../shared-theme/AppTheme";
-import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
+import { TextField, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useColorScheme } from '@mui/material/styles';
@@ -10,18 +10,20 @@ import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../contexts/AuthContex";
+import { db } from "../../firebase/firebase";
+import { doc, updateDoc, deleteField } from "firebase/firestore";
 
-const STORAGE_KEY = "delegados";
+const STORAGE_KEY = (uid) => `delegados_${uid || "anon"}`;
 
-const readDelegados = () => {
+const readDelegados = (uid) => {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
+    const raw = sessionStorage.getItem(STORAGE_KEY(uid));
     const arr = raw ? JSON.parse(raw) : [];
     return Array.isArray(arr)
       ? arr.map((d) => ({
-        ...d,
-        id: d.id ?? d.ci,
-      }))
+          ...d,
+          id: d.id ?? d.ci,
+        }))
       : [];
   } catch {
     return [];
@@ -31,7 +33,6 @@ const readDelegados = () => {
 const DelegatesListContainer = styled(Box)(({ theme }) => ({
   height: 'calc(100vh - 64px)',
   display: 'flex',
-  maxWidth: '100vw',
   flexDirection: 'column',
   width: '100vw',
   maxWidth: '100vw',
@@ -58,14 +59,17 @@ const DelegatesListContainer = styled(Box)(({ theme }) => ({
 }));
 
 export default function DelegatesListPageJR() {
-  const [rows, setRows] = useState(() => readDelegados());
   const { user } = useAuth();
 
+  const [rows, setRows] = useState([]);
   const [searchTypeSelect, setSearchTypeSelect] = useState('ci');
   const [searchText, setSearchText] = useState('');
   const [selectedDistrito, setSelectedDistrito] = useState('all');
   const [selectedRecinto, setSelectedRecinto] = useState('all');
   const [loading, setLoading] = useState(false);
+  
+  const [saving, setSaving] = useState(false);
+  const [changedMap, setChangedMap] = useState({});
 
   const distritosData =
     data.departamentos[0]
@@ -73,24 +77,29 @@ export default function DelegatesListPageJR() {
       .municipios[0]
       .distritos;
 
+  const mesaMax = useMemo(() => {
+    const distritoNum = Number(user?.distrito);
+    const recintoName = String(user?.recinto || "").trim();
+
+    if (!recintoName || Number.isNaN(distritoNum)) return 0;
+
+    const distritoObj = distritosData.find(d => Number(d.numero) === distritoNum);
+    const recintoObj = distritoObj?.recintos?.find(r => String(r.nombre).trim() === recintoName);
+
+    const m = Number(recintoObj?.mesas);
+    return Number.isFinite(m) ? m : 0;
+  }, [user?.distrito, user?.recinto, distritosData]);
+
   const [appliedFilters, setAppliedFilters] = useState({
     searchText: '',
     searchType: 'ci',
   });
-
 
   const { setMode } = useColorScheme();
 
   const handleTypeSearchChange = (e) => {
     setSearchTypeSelect(e.target.value);
   };
-
-  const recintosDisponibles =
-    selectedDistrito === 'all'
-      ? []
-      : distritosData.find(
-        (d) => d.numero === Number(selectedDistrito)
-      )?.recintos || [];
 
   const searchType = [
     { key: 'ci', label: 'C.I.' },
@@ -100,8 +109,6 @@ export default function DelegatesListPageJR() {
 
   const handleSearch = () => {
     setLoading(true);
-
-    // Aquí simulas la búsqueda
     setTimeout(() => {
       setAppliedFilters({
         searchText,
@@ -113,7 +120,6 @@ export default function DelegatesListPageJR() {
 
   const handleClear = () => {
     setSearchText('');
-
     setAppliedFilters({
       searchText: '',
       searchType: searchTypeSelect,
@@ -129,88 +135,69 @@ export default function DelegatesListPageJR() {
     }
   }, [searchText]);
 
+  // ✅ SOLO CACHE: 0 lecturas
+  useEffect(() => {
+    if (!user?.uid) return;
 
+    const distrito = Number(user?.distrito);
+    const recinto = String(user?.recinto || "");
+    if (!recinto || Number.isNaN(distrito)) return;
+
+    setSelectedDistrito(String(distrito));
+    setSelectedRecinto(recinto);
+
+    setRows(readDelegados(user.uid));
+  }, [user?.uid, user?.distrito, user?.recinto]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
-
-      // 🔹 FILTRO DISTRITO
       if (
         selectedDistrito !== 'all' &&
         Number(row.distrito) !== Number(selectedDistrito)
-      ) {
-        return false;
-      }
+      ) return false;
 
-      // 🔹 FILTRO RECINTO
       if (
         selectedDistrito !== 'all' &&
         selectedRecinto !== 'all' &&
         row.recinto !== selectedRecinto
-      ) {
-        return false;
-      }
+      ) return false;
 
-      // 🔹 FILTRO BUSQUEDA (SOLO APLICADO)
       if (appliedFilters.searchText.trim() !== '') {
         const search = appliedFilters.searchText.toLowerCase().trim();
 
         if (appliedFilters.searchType === 'ci') {
-          if (!String(row.ci).toLowerCase().includes(search)) {
-            return false;
-          }
+          if (!String(row.ci).toLowerCase().includes(search)) return false;
         }
 
         if (appliedFilters.searchType === 'telefono') {
-          if (!String(row.telefono).toLowerCase().includes(search)) {
-            return false;
-          }
+          if (!String(row.telefono).toLowerCase().includes(search)) return false;
         }
 
         if (appliedFilters.searchType === 'nombre') {
           const fullName = `${row.nombre ?? ''} ${row.apellido ?? ''}`
             .toLowerCase()
             .trim();
-
-          if (!fullName.includes(search)) {
-            return false;
-          }
+          if (!fullName.includes(search)) return false;
         }
       }
 
       return true;
     });
-  }, [
-    rows,
-    selectedDistrito,
-    selectedRecinto,
-    appliedFilters
-  ]);
-
-
+  }, [rows, selectedDistrito, selectedRecinto, appliedFilters]);
 
   useEffect(() => {
     const html = document.documentElement;
-
     const previousScheme = html.getAttribute('data-mui-color-scheme');
-
     html.setAttribute('data-mui-color-scheme', 'dark');
-
     return () => {
-      if (previousScheme) {
-        html.setAttribute('data-mui-color-scheme', previousScheme);
-      } else {
-        html.removeAttribute('data-mui-color-scheme');
-      }
+      if (previousScheme) html.setAttribute('data-mui-color-scheme', previousScheme);
+      else html.removeAttribute('data-mui-color-scheme');
     };
   }, []);
 
   useEffect(() => {
     setMode('dark');
-
-    return () => {
-      setMode('light');
-    };
+    return () => setMode('light');
   }, [setMode]);
 
   const selectedSearchLabel =
@@ -223,58 +210,46 @@ export default function DelegatesListPageJR() {
 
   const dynamicPlaceholder = `Introduce el ${formattedLabel}`;
 
-
-
   return (
     <AppTheme mode="dark">
-      {
-        loading && <FullScreenProgress text={'Realizando búsqueda'} />
-      }
+      {loading && <FullScreenProgress text={'Realizando búsqueda'} />}
+
       <CssBaseline enableColorScheme />
       <Toolbar />
-      <DelegatesListContainer >
+      <DelegatesListContainer>
         <Box mb={1} display={'flex'} flexDirection={'column'} gap={1}>
-          <Box width={'100%'} display={'flex'} flexDirection={{
-            xs: 'column',
-            sm: 'row'
-          }} alignItems={'center'} justifyContent={'space-between'}>
+          <Box
+            width={'100%'}
+            display={'flex'}
+            flexDirection={{ xs: 'column', sm: 'row' }}
+            alignItems={'center'}
+            justifyContent={'space-between'}
+          >
             <Box>
-              <Typography
-                sx={{
-                  fontSize: {
-                    xs: '1.5rem',
-                    sm: '2.5rem',
-                    textAlign: {
-                      xs: 'center',
-                      sm: 'left'
-                    }
-                  },
-                  fontWeight: 500,
-                }}
-              >Lista de delegados</Typography>
               <Box display={'flex'} gap={1}>
                 <Typography variant="h6" fontWeight={'bold'}>Distrito: </Typography>
                 <Typography variant="caption" color="secondary">{user?.distrito}</Typography>
               </Box>
+
               <Box display={'flex'} gap={1}>
                 <Typography variant="h6" fontWeight={'bold'}>Recinto: </Typography>
                 <Typography>{user?.recinto}</Typography>
               </Box>
-            </Box>
-            <Box width={{ xs: '100%', sm: 'auto' }} display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1}>
               <Typography>Jefe de recinto:</Typography>
               <Typography>{user?.nombre} {user?.apellido}</Typography>
+            </Box>
 
+            <Box width={{ xs: '100%', sm: 'auto' }} display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1}>
+              <Button>
+                Guardar cambios
+              </Button>
             </Box>
           </Box>
+
           <Divider />
+
           <Box display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} gap={1} width={'100%'}>
-            <FormControl sx={{
-              minWidth: 150, maxWidth: {
-                xs: '100%',
-                lg: 150
-              }
-            }}>
+            <FormControl sx={{ minWidth: 150, maxWidth: { xs: '100%', lg: 150 } }}>
               <FormLabel>Buscar por:</FormLabel>
               <Select
                 name="distrito"
@@ -284,24 +259,16 @@ export default function DelegatesListPageJR() {
                 renderValue={(selected) => {
                   const option = searchType.find((s) => s.key === selected);
                   return (
-                    <Box
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                    <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {option?.label}
                     </Box>
                   );
                 }}
-
               >
                 {searchType.map((option) => (
                   <MenuItem key={option.key} value={option.key}>
                     {option.label}
                   </MenuItem>
-
                 ))}
               </Select>
             </FormControl>
@@ -315,14 +282,9 @@ export default function DelegatesListPageJR() {
                 onChange={(e) => setSearchText(e.target.value)}
                 size="small"
                 sx={{
-                  '& .MuiOutlinedInput-root': {
-                    paddingRight: '0px',
-                  },
-                  '& .MuiInputAdornment-root': {
-                    margin: 0,
-                  },
+                  '& .MuiOutlinedInput-root': { paddingRight: '0px' },
+                  '& .MuiInputAdornment-root': { margin: 0 },
                 }}
-
               />
 
               <Button
@@ -338,30 +300,21 @@ export default function DelegatesListPageJR() {
                 }
                 onClick={() => {
                   if (loading) return;
-                  if (appliedFilters.searchText) {
-                    handleClear();
-                  } else {
-                    handleSearch();
-                  }
+                  if (appliedFilters.searchText) handleClear();
+                  else handleSearch();
                 }}
               >
-                {loading
-                  ? 'Buscando...'
-                  : appliedFilters.searchText
-                    ? 'Borrar'
-                    : 'Buscar'}
+                {loading ? 'Buscando...' : appliedFilters.searchText ? 'Borrar' : 'Buscar'}
               </Button>
-
             </Box>
-
           </Box>
+
           <Divider />
         </Box>
 
         <Box flex={1} minHeight={0}>
-          <DelegatesListJR rows={filteredRows} setRows={setRows} />
+          <DelegatesListJR rows={filteredRows} setRows={setRows} mesaMax={mesaMax} />
         </Box>
-
       </DelegatesListContainer>
     </AppTheme>
   );

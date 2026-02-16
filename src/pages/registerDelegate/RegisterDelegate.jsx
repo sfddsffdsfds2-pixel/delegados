@@ -300,7 +300,7 @@ export default function RegisterDelegatePage(props) {
       }
 
       alert("Registrado correctamente");
-      navigate("/lista-delegados", { replace: true });
+      navigate("/lista-delegados-admin", { replace: true });
     } catch (err) {
       console.error(err);
 
