@@ -207,9 +207,13 @@ export default function Header() {
   };
 
 
+  const getAppBarPosition = () => {
+  return location.pathname === "/" ? "static" : "fixed";
+};
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed"
+      <AppBar position={getAppBarPosition()}
         elevation={getHeaderElevation()}
         color='transparent'
         sx={{
