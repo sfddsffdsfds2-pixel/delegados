@@ -11,9 +11,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
 
 const AuthContext = createContext(null);
+
+const STORAGE_DELEGADOS_ALL = "delegados";
+const STORAGE_DELEGADOS_UID = (uid) => `delegados_${uid || "anon"}`;
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,11 +25,16 @@ export const AuthProvider = ({ children }) => {
   const [rol, setRol] = useState("");
 
   const clearSession = () => {
+    const uid = sessionStorage.getItem("uid");
+
     sessionStorage.removeItem("idToken");
     sessionStorage.removeItem("uid");
     sessionStorage.removeItem("email");
     sessionStorage.removeItem("rol");
-    sessionStorage.removeItem("delegados");
+
+    sessionStorage.removeItem(STORAGE_DELEGADOS_ALL);
+
+    if (uid) sessionStorage.removeItem(STORAGE_DELEGADOS_UID(uid));
   };
 
   const setSession = (token, uid, email, role) => {
@@ -41,17 +49,49 @@ export const AuthProvider = ({ children }) => {
     const snap = await getDoc(ref);
     if (!snap.exists()) return null;
 
-    const data = snap.data();
+    const data = snap.data() || {};
+
     return {
       rol: data?.rol || "admin",
-      name: data?.name || "admin",
+      nombre: data?.nombre || data?.name || "admin",
+      apellido: data?.apellido || "",
+      distrito: data?.distrito ?? "",
+      recinto: data?.recinto ?? "",
+      email: data?.email ?? "",
     };
   };
 
-  const cacheDelegadosToSession = async () => {
+  const cacheDelegadosToSessionAll = async () => {
     const snap = await getDocs(collection(db, "delegados"));
     const delegates = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    sessionStorage.setItem("delegados", JSON.stringify(delegates));
+    sessionStorage.setItem(STORAGE_DELEGADOS_ALL, JSON.stringify(delegates));
+    return delegates;
+  };
+
+  const cacheDelegadosToSessionJR = async ({ uid, distrito, recinto }) => {
+    const distNum = Number(distrito);
+    const rec = String(recinto || "");
+
+    if (!uid) return [];
+    if (!rec || Number.isNaN(distNum)) {
+      sessionStorage.setItem(STORAGE_DELEGADOS_UID(uid), JSON.stringify([]));
+      return [];
+    }
+
+    const q = query(
+      collection(db, "delegados"),
+      where("distrito", "==", distNum),
+      where("recinto", "==", rec)
+    );
+
+    const snap = await getDocs(q);
+
+    const delegates = snap.docs.map((d) => {
+      const obj = d.data() || {};
+      return { ...obj, id: obj.id ?? obj.ci ?? d.id };
+    });
+
+    sessionStorage.setItem(STORAGE_DELEGADOS_UID(uid), JSON.stringify(delegates));
     return delegates;
   };
 
@@ -65,8 +105,6 @@ export const AuthProvider = ({ children }) => {
 
       const profile = await checkRoleByUid(cred.user.uid);
 
-      console.log(profile);
-      
       if (!profile) {
         await signOut(auth);
         clearSession();
@@ -79,8 +117,12 @@ export const AuthProvider = ({ children }) => {
       const minimalUser = {
         uid: cred.user.uid,
         email: cleanEmail,
-        name: profile.name,
         rol: profile.rol,
+
+        nombre: profile.nombre,
+        apellido: profile.apellido,
+        distrito: profile.distrito,
+        recinto: profile.recinto,
       };
 
       setUser(minimalUser);
@@ -89,7 +131,13 @@ export const AuthProvider = ({ children }) => {
 
       let delegates = [];
       if (profile.rol === "admin" || profile.rol === "super_admin") {
-        delegates = await cacheDelegadosToSession();
+        delegates = await cacheDelegadosToSessionAll();
+      } else if (profile.rol === "jefe_recinto") {
+        delegates = await cacheDelegadosToSessionJR({
+          uid: cred.user.uid,
+          distrito: profile.distrito,
+          recinto: profile.recinto,
+        });
       }
 
       return { user: minimalUser, rol: profile.rol, delegates };
@@ -142,22 +190,32 @@ export const AuthProvider = ({ children }) => {
         const minimalUser = {
           uid: firebaseUser.uid,
           email,
-          name: profile.name,
           rol: profile.rol,
+          nombre: profile.nombre,
+          apellido: profile.apellido,
+          distrito: profile.distrito,
+          recinto: profile.recinto,
         };
 
         setUser(minimalUser);
         setRol(profile.rol);
         setIsAuthenticated(true);
 
-        if (profile.rol === "admin" && !sessionStorage.getItem("delegados")) {
-          await cacheDelegadosToSession();
+        if ((profile.rol === "admin" || profile.rol === "super_admin") && !sessionStorage.getItem(STORAGE_DELEGADOS_ALL)) {
+          await cacheDelegadosToSessionAll();
         }
+
+        if (profile.rol === "jefe_recinto" && !sessionStorage.getItem(STORAGE_DELEGADOS_UID(firebaseUser.uid))) {
+          await cacheDelegadosToSessionJR({
+            uid: firebaseUser.uid,
+            distrito: profile.distrito,
+            recinto: profile.recinto,
+          });
+        }
+
       } catch (e) {
         console.error("AuthProvider error:", e);
-        try {
-          await signOut(auth);
-        } catch {}
+        try { await signOut(auth); } catch {}
         setUser(null);
         setRol("");
         setIsAuthenticated(false);

@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from 'react';
-import { Box, IconButton, CssBaseline, Button, Typography } from '@mui/material';
+import { Box, IconButton, CssBaseline, Button, Typography, Select, MenuItem } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,7 +17,7 @@ const writeDelegados = (arr) => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
 };
 
-const DelegatesListJR = memo(function DelegatesList({ rows, setRows }) {
+const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0 }) {
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDelegate, setSelectedDelegate] = useState(null);
     const [deleteDelegate, setDeleteDelegate] = useState(false);
@@ -108,6 +108,15 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows }) {
         }
     };
 
+    const usedMesas = useMemo(() => {
+      const s = new Set();
+      rows.forEach((r) => {
+        const m = Number(r.mesa);
+        if (Number.isFinite(m) && m > 0) s.add(m);
+      });
+      return s;
+    }, [rows]);
+
     const columns = useMemo(() => [
         {
             field: 'nombre',
@@ -150,15 +159,61 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows }) {
             minWidth: 80,
         },
         {
-            field: 'mesa',
-            headerName: 'Mesa',
-            flex: 1,
-            maxWidth: 80,
-            minWidth: 80,
-            sortable: false,
-            disableColumnMenu: true,
-            headerAlign: 'center',
-            align: 'center'
+          field: 'mesa',
+          headerName: 'Mesa',
+          flex: 1,
+          maxWidth: 110,
+          minWidth: 110,
+          sortable: true,
+          disableColumnMenu: true,
+          headerAlign: 'center',
+          align: 'center',
+          renderCell: (params) => {
+            const rowId = params.row.id;
+            const currentMesaNum = Number(params.row.mesa);
+            const currentMesa = Number.isFinite(currentMesaNum) && currentMesaNum > 0 ? currentMesaNum : "";
+
+            const total = Number(mesaMax);
+            if (!Number.isFinite(total) || total <= 0) return "-";
+
+            const options = [];
+            for (let i = 1; i <= total; i++) {
+              if (i !== currentMesa && usedMesas.has(i)) continue;
+              options.push(i);
+            }
+
+            return (
+              <Select
+                size="small"
+                value={currentMesa}
+                displayEmpty
+                onClick={(e) => e.stopPropagation()}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  const mesa = v === "" ? "" : Number(v);
+
+                  setRows((prev) => {
+                    const next = prev.map((r) =>
+                      r.id === rowId ? { ...r, mesa } : r
+                    );
+                    writeDelegados(next);
+                    return next;
+                  });
+                }}
+                sx={{ width: 85 }}
+              >
+                <MenuItem value="">
+                  Sin
+                </MenuItem>
+
+                {options.map((m) => (
+                  <MenuItem key={m} value={m}>
+                    {m}
+                  </MenuItem>
+                ))}
+              </Select>
+            );
+          }
         },
         {
             field: 'asistencia',
@@ -211,7 +266,7 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows }) {
                 />
             )
         },
-    ], []);
+    ], [mesaMax, usedMesas, setRows]);
 
     if (deleteDelegate) return <FullScreenProgress text='Eliminando delegado...' />
 
