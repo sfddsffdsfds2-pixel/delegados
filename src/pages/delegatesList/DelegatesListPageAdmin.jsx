@@ -9,6 +9,7 @@ import data from '../../appConfig/Map.json';
 import { FullScreenProgress } from '../../generalComponents/FullScreenProgress';
 
 import { useEffect, useMemo, useState } from "react";
+import RecintoSelectorModal from "../../generalComponents/SelectRecinto";
 
 const STORAGE_KEY = "delegados";
 
@@ -58,11 +59,12 @@ const DelegatesListContainer = styled(Box)(({ theme }) => ({
 
 export default function DelegatesListPageAdmin() {
   const [rows, setRows] = useState(() => readDelegados());
+  const [openRecintoModal, setOpenRecintoModal] = useState(false);
 
   const [searchTypeSelect, setSearchTypeSelect] = useState('ci');
   const [searchText, setSearchText] = useState('');
-  const [selectedDistrito, setSelectedDistrito] = useState('all');
-  const [selectedRecinto, setSelectedRecinto] = useState('all');
+  const [selectedDistrito, setSelectedDistrito] = useState(null);
+  const [selectedRecinto, setSelectedRecinto] = useState(null);
   const [loading, setLoading] = useState(false);
   const { setMode } = useColorScheme();
 
@@ -238,19 +240,27 @@ export default function DelegatesListPageAdmin() {
             xs: 'column',
             sm: 'row'
           }} alignItems={'center'} justifyContent={'space-between'}>
-            <Typography
-              sx={{
-                fontSize: {
-                  xs: '1.5rem',
-                  sm: '2.5rem',
-                  textAlign: {
-                    xs: 'center',
-                    sm: 'left'
-                  }
-                },
-                fontWeight: 500,
-              }}
-            >Lista de delegados</Typography>
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: {
+                    xs: '1.5rem',
+                    sm: '2.5rem',
+                  },
+                  fontWeight: 500,
+                }}
+              >
+                Lista de delegados
+              </Typography>
+
+              <Typography
+                variant="body2"
+                sx={{ opacity: 0.7 }}
+              >
+                {filteredRows.length} delegado{filteredRows.length !== 1 && "s"} encontrados
+              </Typography>
+            </Box>
+
             <Box width={{
               xs: '100%',
               sm: 'auto'
@@ -258,108 +268,33 @@ export default function DelegatesListPageAdmin() {
               xs: 'column',
               sm: 'row'
             }} gap={1}>
-              <FormControl sx={{
-                minWidth: 150, maxWidth: {
-                  xs: '100%',
-                  lg: 150
-                }
-              }}>
-                <FormLabel>Distrito:</FormLabel>
-                <Select
-                  name="distrito"
-                  value={selectedDistrito}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSelectedDistrito(value);
-
-                    if (value === 'all') {
-                      setSelectedRecinto('all');
-                    } else {
-                      const distritoEncontrado = distritosData.find(
-                        (d) => d.numero === Number(value)
-                      );
-
-                      if (distritoEncontrado?.recintos?.length > 0) {
-                        setSelectedRecinto('all');
-                      } else {
-                        setSelectedRecinto('');
-                      }
-                    }
+              <Button
+                variant="outlined"
+                onClick={() => setOpenRecintoModal(true)}
+                sx={{
+                  justifyContent: "flex-start",
+                  textTransform: "none",
+                  overflow: "hidden",
+                  maxWidth: {
+                    xs: '100%',
+                    sm: 300
+                  }
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
-                  renderValue={(selected) => (
-                    <Box
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {selected === 'all'
-                        ? 'Todos los distritos'
-                        : `Distrito ${selected}`}
-                    </Box>
-                  )}
-
-                  required
                 >
-                  <MenuItem value="all">
-                    Todos los distritos
-                  </MenuItem>
-                  {distritosData.map((d) => (
-                    <MenuItem key={d.numero} value={d.numero}>
-                      Distrito {d.numero}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl sx={{
-                minWidth: 200, maxWidth: {
-                  xs: '100%',
-                  lg: 200
-                }
-              }}>
-                <FormLabel>Recinto:</FormLabel>
-                <Select
-                  name="recinto"
-                  value={selectedRecinto}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSelectedRecinto(value);
+                  {selectedDistrito && selectedRecinto
+                    ? `Distrito ${selectedDistrito} - ${selectedRecinto}`
+                    : "Seleccionar distrito y recinto"}
+                </Box>
+              </Button>
 
-                    if (value === 'all') {
-                      setSelectedDistrito('all');
-                    } else {
-                      const distritoEncontrado = distritosData.find(d =>
-                        d.recintos?.some(r => r.nombre === value)
-                      );
-                      if (distritoEncontrado) {
-                        setSelectedDistrito(distritoEncontrado.numero);
-                      }
-                    }
-                  }}
-                  required
-                  renderValue={(selected) => (
-                    <Box
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {selected === 'all' ? 'Todos los recintos' : selected}
-                    </Box>
-                  )}
-                >
-                  <MenuItem value="all">
-                    Todos los recintos
-                  </MenuItem>
-                  {recintosDisponibles.map((r) => (
-                    <MenuItem key={r.nombre} value={r.nombre}>
-                      {r.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
             </Box>
           </Box>
           <Divider />
@@ -412,7 +347,7 @@ export default function DelegatesListPageAdmin() {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     paddingRight: '0px',
-                  }, 
+                  },
                   '& .MuiInputAdornment-root': {
                     margin: 0,
                   },
@@ -448,7 +383,6 @@ export default function DelegatesListPageAdmin() {
               </Button>
 
             </Box>
-
           </Box>
           <Divider />
         </Box>
@@ -458,6 +392,16 @@ export default function DelegatesListPageAdmin() {
         </Box>
 
       </DelegatesListContainer>
+
+      <RecintoSelectorModal
+        open={openRecintoModal}
+        onClose={() => setOpenRecintoModal(false)}
+        distritosData={distritosData}
+        onSelect={({ recinto, distrito }) => {
+          setSelectedDistrito(distrito);
+          setSelectedRecinto(recinto);
+        }}
+      />
     </AppTheme>
   );
 }

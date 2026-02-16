@@ -305,7 +305,7 @@ export default function RecintoSelectorModal({
                     variant="outlined"
                     color="inherit"
                 >
-                    Cancelar
+                    Cerrar
                 </Button>
             </DialogActions>
         </Dialog>
