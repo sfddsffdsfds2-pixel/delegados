@@ -5,6 +5,9 @@ import { styled } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { orange } from "@mui/material/colors";
 
+
+
+
 /* ================= HERO CONTAINER ================= */
 const Hero = styled(Box)(() => ({
   minHeight: "100vh",
@@ -37,36 +40,38 @@ const slides = [
 
 
 
-function SocialIcon({ children, link, bg }) {
+function SocialIcon({ imgSrc, link, desc, bg }) {
   return (
     <Box
-      component="a"
+    component="a"
       href={link}
       target="_blank"
       rel="noopener noreferrer"
+      title={desc}
       sx={{
-        width: 75,
-        height: 75,
+        width: { xs: 55, sm: 70, md: 70 },  // iconos más grandes
+        height: { xs: 55, sm: 70, md: 70 },
         borderRadius: "50%",
         background: "white",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: bg.includes("gradient") ? "#E1306C" : bg,
         transition: "all .4s ease",
         boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
         "&:hover": {
           background: bg,
-          color: "white",
-          transform: "translateY(-10px) scale(1.1)",
+          transform: "translateY(-10px) scale(1.2)", // hover más llamativo
           boxShadow: "0 20px 40px rgba(0,0,0,0.35)",
         },
       }}
     >
-      {children}
+      <img src={imgSrc} alt={desc} style={{ width: "50%", height: "50%" }} />
     </Box>
   );
 }
+
+
+
 /* ================= COMPONENT ================= */
 export default function HomePage() 
 {
@@ -80,6 +85,8 @@ export default function HomePage()
   }, []);
 
   return (
+    
+    
     <Box>
       {/* ================= HERO ================= */}
       <Hero
@@ -173,6 +180,7 @@ export default function HomePage()
 
             <Button
               variant="contained"
+                href="#redes"
               sx={{
                 background: "#ff8a00",
                 px: 5,
@@ -190,15 +198,16 @@ export default function HomePage()
 
       {/* ================= SECCIÓN INFORMACIÓN + IMAGEN ================= */}
       <Box
+      id="vision"
         sx={{
-          py: { xs: 10, md: 16 },
+          py: { xs: 4, md: 16 },
           px: { xs: 3, md: 10 },
           background: "#f5efe7",
         }}
       >
         <Stack
           direction={{ xs: "column", md: "row" }}
-          spacing={{ xs: 6, md: 10 }}
+          spacing={{ xs: 4, md: 10 }}//de la imagen es esto de oscar claros referido espacio 10 distritos a 32px
           alignItems="center"
           maxWidth={1300}
           mx="auto"
@@ -241,34 +250,54 @@ export default function HomePage()
             </Typography>
 
             {/* Botones */}
-            <Stack direction="row" spacing={2} flexWrap="wrap">
-              <Button
-                variant="contained"
-                sx={{
-                  background: "#e67e00",
-                  px: 4,
-                  py: 1.5,
-                  fontWeight: 700,
-                  borderRadius: 3,
-                }}
-              >
-                Apoya nuestra campaña →
-              </Button>
+            <Stack
+  direction={{ xs: "column", sm: "row" }}
+  gap={2}
+  width="100%"
+>
+  <Button
+  variant="contained"
+  onClick={() => {
+    const seccion = document.getElementById("redes");
+    if (seccion) {
+      seccion.scrollIntoView({ behavior: "smooth" });
+    }
+  }}
+    fullWidth
+    sx={{
+      background: "#e67e00",
+      px: 4,
+      py: 1.5,
+      fontWeight: 700,
+      borderRadius: 3,
+    }}
+  >
+    Unete al cambio →
+  </Button>
 
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: "#e67e00",
-                  color: "#e67e00",
-                  px: 4,
-                  py: 1.5,
-                  fontWeight: 700,
-                  borderRadius: 3,
-                }}
-              >
-                Conoce nuestras propuestas
-              </Button>
-            </Stack>
+  <Button
+   variant="contained"
+  onClick={() => {
+    const seccion = document.getElementById("propuestas");
+    if (seccion) {
+      seccion.scrollIntoView({ behavior: "smooth" });
+    }
+  }}
+    fullWidth
+    sx={{
+      borderColor: "#e67e00",
+      color: "#e67e00",
+      background: "transparent",
+      px: 4,
+      py: 1.5,
+      fontWeight: 700,
+      borderRadius: 3,
+    }}
+  >
+    Conoce nuestras propuestas
+  </Button>
+</Stack>
+
 
             {/* Stats */}
 <Box
@@ -301,7 +330,7 @@ export default function HomePage()
 
   <Box sx={{ textAlign: "center", flex: 1 }}>
     <Typography sx={{ fontSize: "2rem", fontWeight: 900, color: "#e67e00" }}>
-      95
+      95+
     </Typography>
     <Typography sx={{ fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" } }}>
       Otb's y organizaciones sociales
@@ -318,6 +347,7 @@ export default function HomePage()
             transition={{ duration: 0.9 }}
             viewport={{ once: true }}
             sx={{
+              mt: 4, 
               flex: 1,
               display: "flex",
               justifyContent: "center",
@@ -328,9 +358,10 @@ export default function HomePage()
             {/* Wrapper que controla overflow y tamaño */}
             <Box
               sx={{
+                mt:0,// margin top 0  para lo que es la imagen dentro del card de oscar claros
                 width: "100%",
                 maxWidth: { xs: 280, sm: 360, md: 480, lg: 560 },
-                p: { xs: 2, sm: 3 },
+                p: { xs: 2, sm: 3 }, //[padding espacio de la imagen recpecto al card]
                 borderRadius: 6,
                 background: "linear-gradient(180deg,#e6c9a6,#d8c3a5)",
                 overflow: "hidden",
@@ -361,8 +392,9 @@ export default function HomePage()
 
  {/* ================= QUIÉN SOY ================= */}
 <Box
+ id="Quien soy"
   sx={{
-    py: { xs: 4, md: 12 }, // 🔥 menos espacio vertical
+    pt: { xs: 4, md: 8 }, // 🔥 menos espacio vertical
     px: { xs: 1, md: 10 },
     background: "#f7f2ec",
     textAlign: "center",
@@ -380,7 +412,9 @@ export default function HomePage()
         fontSize: { xs: "2rem", md: "3rem" },
         fontWeight: 900,
         color: "#e67e00",
-        mb: 2,
+        mb: 4,// espacio que deja de bajo la descripcion de soy oscar
+
+        
       }}
     >
       Quién soy
@@ -392,7 +426,7 @@ export default function HomePage()
         mx: "auto",
         color: "#6b4a3a",
         fontSize: { xs: "1rem", md: "1.2rem" },
-        mb: 8, // 🔥 menos espacio abajo
+        mb: 6, // 🔥 menos espacio abajo espacio con  la seccion de los cards de abajo propuestas
       }}
     >
       Soy Óscar Claros Rivas, abogado y candidato a la Alcaldía de Quillacollo.
@@ -402,101 +436,113 @@ Mi historia está profundamente ligada a Quillacollo. Aquí crecí, aquí trabaj
     </Typography>
   </motion.div>
 
-  {/* Cards */}
-  <Stack
-    direction={{ xs: "column", md: "row" }}
-    spacing={5}
-    justifyContent="center"
-    alignItems="stretch"
-  >
-    {[
-      {
-        title: "Raíces y valores",
-        text: "Crecí en Quillacollo aprendiendo que el esfuerzo, la unidad y la honestidad son la base para salir adelante.",
-        image: "/juventud1.png",
-      },
-      {
-        title: "Gestión con resultados",
-        text: "Propuestas pensadas para mejorar la vida de las familias de Quillacollo, con planificación, experiencia y compromiso real.",
-        image: "/este.png",
-      },
-      {
-        title: "Participación y Democracia",
-        text: "Una gestión construida junto a los vecinos, con transparencia y control social para que cada ciudadano sea parte del cambio.",
-        image: "/juntovencidad.jpg",
-      },
-    ].map((item, i) => (
-      <motion.div
-        key={i}
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: i * 0.2 }}
-        viewport={{ once: true }}
-        style={{ flex: 1 }}
+
+
+
+
+{/* Cards */}
+<Stack
+  direction={{ xs: "column", md: "row" }}
+  spacing={5}
+  justifyContent="center"
+  alignItems="stretch"
+>
+  {[
+    {
+      title: "Raíces y valores",
+      text: "Crecí en Quillacollo aprendiendo que el esfuerzo, la unidad y la honestidad son la base para salir adelante.",
+      image: "/juventud1.png",
+    },
+    {
+      title: "Gestión con resultados",
+      text: "Propuestas pensadas para mejorar la vida de las familias de Quillacollo, con planificación, experiencia y compromiso real.",
+      image: "/este.png",
+    },
+    {
+      title: "Participación y Democracia",
+      text: "Una gestión construida junto a los vecinos, con transparencia y control social para que cada ciudadano sea parte del cambio.",
+      image: "/juntovencidad.jpg",
+    },
+  ].map((item, i) => (
+    <motion.div
+      key={i}
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: i * 0.2 }}
+      viewport={{ once: true }}
+      style={{
+        flex: 1,
+        display: "flex",
+        justifyContent: "center", // 🔥 centra en desktop
+      }}
+    >
+      <Box
+        sx={{
+          background: "#e6ddd3",
+          p: { xs: 3, md: 5 },
+          borderRadius: 5,
+          textAlign: "center",
+          height: "100%",
+          width: "100%",
+          maxWidth: 420,          // 🔥 CONTROLA EL ANCHO (CLAVE)
+          mx: "auto",             // 🔥 CENTRA EN MOBILE
+          transition: "all .4s ease",
+          border: i === 1 ? "2px solid #e67e00" : "2px solid transparent",
+          "&:hover": {
+            transform: "translateY(-8px)",
+            boxShadow: "0 20px 40px rgba(0,0,0,.15)",
+          },
+        }}
       >
+        {/* Imagen */}
         <Box
+          component="img"
+          src={item.image}
+          alt={item.title}
           sx={{
-            background: "#e6ddd3",
-            p: { xs: 2.6, md: 5 }, // 🔥 padding optimizado
-            borderRadius: 5,
-            textAlign: "center",
-            height: "100%",
-            transition: "all .4s ease",
-            border: i === 1 ? "2px solid #e67e00" : "1px solid transparent",
-            "&:hover": {
-              transform: "translateY(-8px)",
-              boxShadow: "0 20px 40px rgba(0,0,0,.15)",
-            },
+            width: "100%",
+            maxWidth: 300,
+            height: 150,
+            objectFit: "cover",
+            borderRadius: 3,
+            display: "block",
+            mx: "auto",
+            mb: 2,
+          }}
+        />
+
+        <Typography
+          sx={{
+            fontSize: "1.4rem",
+            fontWeight: 800,
+            color: "#e67e00",
+            mb: 2,
           }}
         >
-          {/* Imagen más grande */}
-          <Box
-            component="img"
-            src={item.image}
-            alt={item.title}
-            sx={{
-              width: "100%",
-              maxWidth: 300,  // 🔥 más grande
-              height: 150,    // 🔥 más presencia
-              objectFit: "cover",
-              borderRadius: 3,
-              display: "block",
-              mx: "auto",
-              mb: 3,
-            }}
-          />
+          {item.title}
+        </Typography>
 
-          <Typography
-            sx={{
-              fontSize: "1.4rem",
-              fontWeight: 800,
-              color: "#e67e00",
-              mb: 2,
-            }}
-          >
-            {item.title}
-          </Typography>
-
-          <Typography
-            sx={{
-              color: "#6b4a3a",
-              lineHeight: 1.7,
-            }}
-          >
-            {item.text}
-          </Typography>
-        </Box>
-      </motion.div>
-    ))}
-  </Stack>
+        <Typography
+          sx={{
+            color: "#6b4a3a",
+            lineHeight: 1.7,
+          }}
+        >
+          {item.text}
+        </Typography>
+      </Box>
+    </motion.div>
+  ))}
+</Stack>
 </Box>
 
 
 {/* ================= PROPUESTAS RESPONSIVE REAL ================= */}
 <Box
+id="propuestas" 
   sx={{
-    py: { xs: 8, md: 14 },
-    px: { xs: 2, md: 8 },
+    py: { xs: 4, md: 7 }, // 14 propuestas principales con lo de arriba card separacion optimizado
+    px: { xs: 1, md: 8 },
     background: "#f3ece4",
     textAlign: "center",
   }}
@@ -510,7 +556,7 @@ Mi historia está profundamente ligada a Quillacollo. Aquí crecí, aquí trabaj
       mb: 2,
     }}
   >
-    Propuestas Prioritarias
+    Propuestas 
   </Typography>
 
   <Typography
@@ -518,10 +564,10 @@ Mi historia está profundamente ligada a Quillacollo. Aquí crecí, aquí trabaj
       maxWidth: 700,
       mx: "auto",
       color: "#6b4a3a",
-      mb: 8,
+      mb: 4,
     }}
   >
-    Transformamos ideas en acciones concretas para un futuro sólido.
+    Visión clara y compromiso firme para el desarrollo de Quillacollo.
   </Typography>
 
   {/* GRID RESPONSIVE REAL */}
@@ -635,21 +681,23 @@ Mi historia está profundamente ligada a Quillacollo. Aquí crecí, aquí trabaj
 
 {/* ================= UNETE AL MOVIMIENTO ================= */}
 <Box
+  id="redes" 
   sx={{
-    py: { xs: 10, md: 14 },
-    px: 2,
+    py: { xs: 4, md: 10 }, //separacion optimizada con lo de arriba y abajo ta,mano y md lo que es cuando el txt mas abajo o arriba
+    px: 1,
     background: "#e8d8c0",
     color: "white",
     textAlign: "center",
   }}
 >
-  <Box sx={{ maxWidth: 1000, mx: "auto" }}>
+  
+  <Box sx={{ maxWidth: 1000, mx: "auto" }}> 
     
-    <Typography
+    <Typography //que tanto ingresa el texto
       sx={{
-        fontSize: { xs: "2rem", md: "3rem" },
+        fontSize: { xs: "1.8rem", md: "3rem" },
         fontWeight: 900,
-        mb: 3,
+        mb: 2,
         animation: "fadeUp 1s ease forwards",
         color: "#e67e00",
       }}
@@ -660,7 +708,7 @@ Mi historia está profundamente ligada a Quillacollo. Aquí crecí, aquí trabaj
     <Typography
       sx={{
         fontSize: { xs: "1rem", md: "1.2rem" },
-        mb: 8,
+        mb: 4,
         opacity: 0.95,
         animation: "fadeUp 1.3s ease forwards",
          color: "#6b4a3a",
@@ -670,47 +718,43 @@ Mi historia está profundamente ligada a Quillacollo. Aquí crecí, aquí trabaj
       alcance su verdadero potencial.
     </Typography>
 
-   {/* REDES SOCIALES */}
-<Box
-  sx={{
-    display: "grid",
-    gridTemplateColumns: {
-      xs: "repeat(2, 1fr)",   // celular → 2 y 2
-      sm: "repeat(2, 1fr)",   // tablet → 2 y 2
-      md: "repeat(4, 1fr)",   // desktop → 4 en una fila
-    },
-    gap: { xs: 2, md: 4 },
-    maxWidth: 450,
+ 
+
+
+    {/* REDES SOCIALES */}
+    <Box
+      sx={{
+       display: "flex",
+    justifyContent: "space-between", // mantiene los 4 en línea
+    maxWidth: { xs: 280, sm: 350, md: 400 }, // ajusta según quieras el tamaño de los íconos
     mx: "auto",
-    justifyItems: "center",
     animation: "fadeUp 1.6s ease forwards",
-  }}
->
-
-
-      <SocialIcon link="#" bg="#1877F2">
-        <svg viewBox="0 0 24 24" width="28" fill="currentColor">
-          <path d="M22 12a10 10 0 10-11.5 9.9v-7H8v-3h2.5V9.5c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.7-1.6 1.5V12H17l-.4 3h-2.7v7A10 10 0 0022 12z"/>
-        </svg>
-      </SocialIcon>
-
-      <SocialIcon link="#" bg="linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)">
-        <svg viewBox="0 0 24 24" width="28" fill="currentColor">
-          <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm5 5.5A4.5 4.5 0 1112 16a4.5 4.5 0 010-9zm6-1a1 1 0 110 2 1 1 0 010-2z"/>
-        </svg>
-      </SocialIcon>
-
-      <SocialIcon link="#" bg="#25D366">
-        <svg viewBox="0 0 24 24" width="28" fill="currentColor">
-          <path d="M12 2a10 10 0 00-8.7 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm5.2 13.7c-.2.6-1.1 1-1.6 1.1-.4.1-.9.2-1.5 0-3-.8-5-3.5-5.2-3.7-.2-.2-1.2-1.6-1.2-3 0-1.4.7-2.1 1-2.4.3-.3.6-.4.8-.4.2 0 .4 0 .6 0 .2 0 .4-.1.6.5.2.6.8 2 .9 2.1.1.2.1.4 0 .6-.1.2-.2.4-.3.5-.2.2-.4.5-.5.6-.2.2-.4.4-.2.8.2.4 1 1.7 2.1 2.7 1.4 1.3 2.5 1.7 2.9 1.9.4.2.6.1.8-.1.2-.2.9-1 1.1-1.3.2-.3.4-.2.6-.1.2.1 1.5.7 1.8.9.3.2.4.3.4.5 0 .2 0 1-.2 1.6z"/>
-        </svg>
-      </SocialIcon>
-
-      <SocialIcon link="#" bg="#000">
-        <svg viewBox="0 0 24 24" width="28" fill="currentColor">
-          <path d="M16 3c.4 1.6 1.8 2.8 3.5 3v3a7 7 0 01-3.5-1v6.5a5.5 5.5 0 11-4-5.3v3.2a2.3 2.3 0 102 2.3V3h2z"/>
-        </svg>
-      </SocialIcon>
+      }}
+    >
+      <SocialIcon
+        link="https://chat.whatsapp.com/JIWDQOJLUPxJ1GHj9srKBm"
+        imgSrc="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+        desc="WhatsApp"
+        bg="#25D366"
+      />
+      <SocialIcon
+        link="https://www.instagram.com/oscarclarosconquilla/"
+        imgSrc="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg"
+        desc="Instagram"
+        bg="linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)"
+      />
+      <SocialIcon
+        link="https://www.facebook.com/profile.php?id=61554300315300"
+        imgSrc="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
+        desc="Facebook"
+        bg="#1877F2"
+      />
+      <SocialIcon
+        link="https://www.tiktok.com/@oscar.claros.quil"
+        imgSrc="https://static.cdnlogo.com/logos/t/69/tiktok-icon.svg"
+        desc="X / TikTok"
+        bg="#000"
+      />
     </Box>
   </Box>
 
@@ -729,93 +773,155 @@ Mi historia está profundamente ligada a Quillacollo. Aquí crecí, aquí trabaj
 
 
 
-
-{/* ================= FOOTER ================= */}
+{/* ================= FOOTER HORIZONTAL FIJO ================= */}
 <Box
+  component="footer"
   sx={{
-    background: "#111",
-    color: "white",
-    pt: 8,
-    pb: 4,
-    px: 2,
+    background: "#111111",
+    color: "#ffffff",
+    px: { xs: 1, sm: 2, md: 10 },
+   pt: { xs: 1.2, sm: 1.5, md: 4 },
+   pb: { xs: 1, sm: 1.2, md: 3 },
   }}
 >
+  {/* --- FILA PRINCIPAL --- */}
   <Box
     sx={{
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "flex-start",
+      gap: { xs: 2, sm: 3, md: 10 },
       maxWidth: 1200,
       mx: "auto",
-      display: "grid",
-      gridTemplateColumns: {
-        xs: "1fr",
-        sm: "repeat(2, 1fr)",
-        md: "repeat(3, 1fr)",  // ← AHORA SOLO 3 COLUMNAS
-      },
-      gap: 6,
-      mb: 6,
+      width: "100%",
+      flexWrap: "nowrap",
     }}
   >
-    {/* LOGO / NOMBRE */}
-    <Box>
-      
-      <Typography fontWeight={900} fontSize="1.5 rem" mb={2} color={"#e67e00"} variant="h4" 
-  component="div">
-        oscar claros
+    {/* ===== Columna 1 ===== */}
+    <Box sx={{ flex: 1.4, minWidth: 0 }}>
+      <Typography
+        sx={{
+          fontSize: { xs: "0.85rem", sm: "1.1rem", md: "2rem" },
+          fontWeight: 900,
+          mb: { xs: 0.5, md: 1 },
+          color: "#e67e00",
+        }}
+      >
+        Oscar Claros
       </Typography>
-      <Typography sx={{ opacity: 0.7 }}>
-        Comprometidos con el progreso, la transparencia y el desarrollo de
-        nuestra ciudad.
+
+      <Typography
+        sx={{
+          fontSize: { xs: "0.6rem", sm: "0.75rem", md: "1rem" },
+          lineHeight: { xs: 1.2, md: 1.5 },
+          color: "#cccccc",
+          opacity: 0.9,
+        }}
+      >
+        Comprometidos con el progreso, la transparencia y el desarrollo de nuestra ciudad.
       </Typography>
     </Box>
 
-    {/* ENLACES */}
-    <Box>
-      <Typography fontWeight={700} mb={2}>
+    {/* ===== Columna 2 ===== */}
+    <Box sx={{ flex: 0.8, minWidth: 0 }}>
+      <Typography
+        sx={{
+          fontWeight: 700,
+          mb: { xs: 0.5, md: 1 },
+          fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
+        }}
+      >
         Navegación
       </Typography>
-      <Typography sx={{ opacity: 0.7, mb: 1, cursor: "pointer" }}>
-        Inicio
-      </Typography>
-      <Typography sx={{ opacity: 0.7, mb: 1, cursor: "pointer" }}>
-        Propuestas
-      </Typography>
-      <Typography sx={{ opacity: 0.7, mb: 1, cursor: "pointer" }}>
-        Equipo
-      </Typography>
-      <Typography sx={{ opacity: 0.7, cursor: "pointer" }}>
-        Contacto
-      </Typography>
+
+     <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
+  {[
+    { label: "Inicio", href: "#" },
+    { label: "vision", href: "#vision" },
+    { label: "Quien soy", href: "#Quien soy" },
+    { label: "Propuestas", href: "#propuestas" },
+    { label: "unete al cambio", href: "#redes" },
+  ].map((item) => (
+    <Box
+      key={item.label}
+      component="li"
+      sx={{
+        mb: 0.3,
+        fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.95rem" },
+        lineHeight: { xs: 1.1, md: 1.4 },
+      }}
+    >
+      <a
+        href={item.href}
+        style={{
+          color: "#cccccc",
+          textDecoration: "none",
+          fontWeight: 500,
+          transition: "color 0.2s ease",
+        }}
+        onMouseOver={(e) => (e.target.style.color = "#e67e00")}
+        onMouseOut={(e) => (e.target.style.color = "#cccccc")}
+      >
+        {item.label}
+      </a>
+    </Box>
+  ))}
+</Box>
+
     </Box>
 
-    {/* CONTACTO */}
-    <Box>
-      <Typography fontWeight={700} mb={2}>
+    {/* ===== Columna 3 ===== */}
+    <Box sx={{ flex: 1, minWidth: 0 }}>
+      <Typography
+        sx={{
+          fontWeight: 700,
+          mb: { xs: 0.5, md: 1 },
+          fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
+        }}
+      >
         Contacto
       </Typography>
-      <Typography sx={{ opacity: 0.7, mb: 1 }}>
-        📍 Valle Bajo
-      </Typography>
-      <Typography sx={{ opacity: 0.7, mb: 1 }}>
-        📞 +591 70000000
-      </Typography>
-      <Typography sx={{ opacity: 0.7 }}>
-        ✉ contacto@movimiento.bo
-      </Typography>
+
+      <Box
+        component="ul"
+        sx={{
+          listStyle: "none",
+          p: 0,
+          m: 0,
+          color: "#cccccc",
+          fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.95rem" },
+          lineHeight: { xs: 1.2, md: 1.4 },
+        }}
+      >
+        <Box component="li" sx={{ mb: 0.3 }}>📍 Av. Blanco Galindo, entre antofagasta y Gral.camacho.Acera sud</Box>
+        <Box component="li" sx={{ mb: 0.3 }}>📞 +591 60797939</Box>
+        <Box component="li"></Box>
+      </Box>
     </Box>
   </Box>
 
-  {/* LINEA INFERIOR */}
+  {/* ===== COPYRIGHT ===== */}
   <Box
     sx={{
-      borderTop: "1px solid rgba(255,255,255,0.1)",
-      pt: 3,
-      textAlign: "center",
-      opacity: 0.6,
-      fontSize: "0.9rem",
+     borderTop: "1px solid #333333",
+    pt: { xs: 0.8, md: 2 },
+    mt: { xs: 1.2, md: 2.5 },
+    textAlign: "center",
     }}
   >
-    © {new Date().getFullYear()} Movimiento Ciudadano. Todos los derechos reservados.
+    <Typography
+      sx={{
+        fontSize: { xs: "0.55rem", sm: "0.65rem", md: "0.9rem" },
+        color: "#777777",
+      }}
+    >
+      © 2026 Candidato Oscar Claros. Todos los derechos reservados.
+    </Typography>
   </Box>
 </Box>
+
+
 
 
 
