@@ -97,7 +97,7 @@ export default function HomePage()
           transition: "all 1s ease",
         }}
       >
-        {/* Overlay oscuro */}
+        {/* Overlay oscuroo */}
         <Box
           sx={{
             position: "absolute",
