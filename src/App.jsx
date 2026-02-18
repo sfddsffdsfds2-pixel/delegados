@@ -69,7 +69,7 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AppTheme>
+    <AppTheme mode="dark">
       <AuthProvider>
         <BrowserRouter>
           <NotificationProvider>

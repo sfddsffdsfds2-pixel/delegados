@@ -207,14 +207,6 @@ export default function DelegatesListPageAdmin() {
     };
   }, []);
 
-  useEffect(() => {
-    setMode('dark');
-
-    return () => {
-      setMode('light');
-    };
-  }, [setMode]);
-
   const selectedSearchLabel =
     searchType.find((s) => s.key === searchTypeSelect)?.label || '';
 

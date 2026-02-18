@@ -54,7 +54,7 @@ export default function Header() {
     switch (location.pathname) {
       case "/":
         return {
-          background: "transparent"
+          background: "transparent !important"
         };
 
       case "/iniciar-sesion":
@@ -208,7 +208,7 @@ export default function Header() {
 
 
   const getAppBarPosition = () => {
-  return location.pathname === "/" ? "static" : "fixed";
+  return location.pathname === "/" ? "absolute" : "fixed";
 };
 
   return (
