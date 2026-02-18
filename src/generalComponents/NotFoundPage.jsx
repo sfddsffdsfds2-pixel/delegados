@@ -1,7 +1,6 @@
 import { Box, Button, CssBaseline, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import AppTheme from "../shared-theme/AppTheme";
 
 const Container = styled(Box)(() => ({
   height: "100vh",
@@ -33,7 +32,7 @@ export default function NotFoundPage({
   };
 
   return (
-    <AppTheme>
+    <>  
       <CssBaseline enableColorScheme />
       <Container>
         <Typography variant="h2" sx={{ mb: 2, fontWeight: "bold" }}>
@@ -49,6 +48,6 @@ export default function NotFoundPage({
           </Button>
         )}
       </Container>
-    </AppTheme>
+    </>
   );
 }

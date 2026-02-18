@@ -3,7 +3,6 @@ import { Box, CssBaseline, Button, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AppTheme from '../../../shared-theme/AppTheme';
 import EditDelegate from './EditDelegate';
 import { useConfirm } from 'material-ui-confirm';
 import { db } from "../../../firebase/firebase";
@@ -16,25 +15,19 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 
 const STORAGE_KEY = "delegados";
-
+ 
 const writeDelegados = (arr) => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
 };
 
 const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
     const [openEdit, setOpenEdit] = useState(false);
-    const [selectedDelegate, setSelectedDelegate] = useState(null);
     const [deleteDelegate, setDeleteDelegate] = useState(false);
     const [updateDelegate, setUpdateDelegate] = useState(false);
     const { notify } = useNotification();
     const navigate = useNavigate();
 
     const confirm = useConfirm()
-
-    const handleEdit = (row) => {
-        setSelectedDelegate(row);
-        setOpenEdit(true);
-    };
 
     const handleDelete = (id) => {
         confirm({
@@ -232,15 +225,15 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                                 variant="outlined"
                                 size="small"
                                 onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate("/lista-delegados-jr", {
-                                    state: {
-                                      distrito: String(params.row.distrito),
-                                      recinto: String(params.row.recinto),
-                                      nombre: String(params.row.nombre || ""),
-                                      apellido: String(params.row.apellido || ""),
-                                    },
-                                  });
+                                    e.stopPropagation();
+                                    navigate("/lista-delegados-jr", {
+                                        state: {
+                                            distrito: String(params.row.distrito),
+                                            recinto: String(params.row.recinto),
+                                            nombre: String(params.row.nombre || ""),
+                                            apellido: String(params.row.apellido || ""),
+                                        },
+                                    });
                                 }}
                                 sx={{
                                     flex: 1,
@@ -256,10 +249,12 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                             variant="outlined"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleEdit(params.row);
+                                navigate(`/editar-delegado/${params.row.id}`, {
+                                    state: { delegate: params.row }
+                                });
                             }}
                             sx={{
-                                flex: 2, 
+                                flex: 2,
                                 minWidth: 0,
                             }}
                         >
@@ -296,7 +291,7 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
     if (updateDelegate) return <FullScreenProgress text='Actualizando delegado...' />
 
     return (
-        <AppTheme>
+        <>
             <CssBaseline enableColorScheme />
 
             <Box sx={{ height: '100%', width: '100%' }}>
@@ -335,15 +330,7 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                     }}
                 />
             </Box>
-
-            <EditDelegate
-                open={openEdit}
-                onClose={() => setOpenEdit(false)}
-                selectedDelegate={selectedDelegate}
-                onSave={handleSave}
-            />
-
-        </AppTheme>
+        </>
     );
 });
 

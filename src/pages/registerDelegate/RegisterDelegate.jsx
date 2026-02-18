@@ -10,7 +10,6 @@ import MuiCard from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { styled, useColorScheme } from '@mui/material/styles';
-import AppTheme from '../../shared-theme/AppTheme';
 import { useNavigate } from 'react-router-dom';
 import { db } from "../../firebase/firebase";
 import { doc, getDoc, setDoc, serverTimestamp, runTransaction } from "firebase/firestore";
@@ -300,7 +299,7 @@ export default function RegisterDelegatePage(props) {
       notify("Ocurrió un error inesperado al registrar el delegado. Inténtalo de nuevo más tarde.", "success");
     } finally {
       setIsLoading(false);
-    }
+    } 
   };
 
   const hasErrors = Object.values(errors).some((err) => err);
@@ -308,7 +307,7 @@ export default function RegisterDelegatePage(props) {
   if (loading) return <FullScreenProgress text="Registrando delegado..." />
 
   return (
-    <AppTheme>
+    <>
       <CssBaseline enableColorScheme />
       <Toolbar />
       <Container direction="column">
@@ -608,7 +607,6 @@ export default function RegisterDelegatePage(props) {
           email: ''
         })}
       />
-
-    </AppTheme >
+    </>
   );
 }

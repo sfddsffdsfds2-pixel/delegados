@@ -4,6 +4,7 @@ import { ConfirmProvider } from 'material-ui-confirm'
 
 import LoginPage from './pages/login/LoginPage'
 import RegisterDelegatePage from './pages/registerDelegate/RegisterDelegate'
+import EditDelegatePage from './pages/editDelegate/EditDelegatePage'
 import HomePage from './pages/HomePage'
 
 import Header from './generalComponents/Header'
@@ -37,6 +38,15 @@ const AppContent = () => {
           element={
             <PrivateRoute allowedRoles={['admin', 'super_admin']}>
               <RegisterDelegatePage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/editar-delegado/:ci"
+          element={
+            <PrivateRoute allowedRoles={['admin', 'super_admin']}>
+              <EditDelegatePage />
             </PrivateRoute>
           }
         />

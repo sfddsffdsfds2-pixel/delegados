@@ -1,6 +1,5 @@
 import { Backdrop, Box, CircularProgress, Container, CssBaseline, Divider, FormControl, FormLabel, InputLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
 import DelegatesListAdmin from "./components/DelegatesListAdmin";
-import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -220,7 +219,7 @@ export default function DelegatesListPageAdmin() {
 
 
   return (
-    <AppTheme mode="dark">
+    <>
       {
         loading && <FullScreenProgress text={'Realizando búsqueda'} />
       }
@@ -463,6 +462,6 @@ export default function DelegatesListPageAdmin() {
           setSelectedRecinto(recinto);
         }}
       />
-    </AppTheme>
+    </>
   );
 }

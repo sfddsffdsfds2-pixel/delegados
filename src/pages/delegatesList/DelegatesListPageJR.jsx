@@ -1,6 +1,5 @@
 import { Box, CircularProgress, CssBaseline,  Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
 import DelegatesListJR from "./components/DelegatesListJR";
-import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -321,7 +320,7 @@ export default function DelegatesListPageJR() {
     : `${user?.nombre || ""} ${user?.apellido || ""}`.trim();
 
   return (
-    <AppTheme mode="dark">
+    <>
       {loading && <FullScreenProgress text={'Realizando búsqueda'} />}
 
       <CssBaseline enableColorScheme />
@@ -434,6 +433,6 @@ export default function DelegatesListPageJR() {
           />
         </Box>
       </DelegatesListContainer>
-    </AppTheme>
+    </>
   );
 }
