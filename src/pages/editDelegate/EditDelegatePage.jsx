@@ -360,9 +360,11 @@ export default function EditDelegatePage() {
                                     variant="outlined"
                                     onClick={() => setOpenRecintoModal(true)}
                                 >
-                                    {formData.recinto
-                                        ? `Distrito ${formData.distrito} - ${formData.recinto}`
-                                        : "Seleccionar distrito y recinto"}
+                                    <Typography lineHeight={1} textAlign={'left'}>
+                                        {formData.recinto
+                                            ? `Distrito ${formData.distrito} - ${formData.recinto}`
+                                            : "Seleccionar distrito y recinto"}
+                                    </Typography>
                                 </Button>
                             </FormControl>
 
@@ -378,26 +380,29 @@ export default function EditDelegatePage() {
                                     <MenuItem value="jefe_recinto">Jefe de recinto</MenuItem>
                                 </Select>
                             </FormControl>
-                        </Box>
 
-                        {/* Mesa */}
-                        {formData.rol === "delegado" && mesasDisponibles.length > 0 && (
-                            <Select
-                                name="mesa"
-                                value={formData.mesa || ""}
-                                onChange={handleChange}
-                                displayEmpty
-                            >
-                                <MenuItem value="">
-                                    Seleccionar mesa
-                                </MenuItem>
-                                {mesasDisponibles.map(num => (
-                                    <MenuItem key={num} value={num}>
-                                        Mesa {num}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        )}
+                            {/* Mesa */}
+                            <FormControl fullWidth>
+                                <FormLabel>Mesa:</FormLabel>
+                                {mesasDisponibles.length > 0 && (
+                                    <Select
+                                        name="mesa"
+                                        value={formData.mesa || ""}
+                                        onChange={handleChange}
+                                        displayEmpty
+                                    >
+                                        <MenuItem value="">
+                                            Seleccionar mesa
+                                        </MenuItem>
+                                        {mesasDisponibles.map(num => (
+                                            <MenuItem key={num} value={num}>
+                                                Mesa {num}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                )}
+                            </FormControl>
+                        </Box>
 
                         {/* Credenciales si es jefe */}
                         {formData.rol === "jefe_recinto" && (
@@ -429,7 +434,13 @@ export default function EditDelegatePage() {
                             </>
                         )}
 
-                        <Box display="flex" gap={2} mt={3}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                gap: 2,
+                                mt: "auto"
+                            }}
+                        >
                             <Button fullWidth color="error" variant="contained" onClick={handleCancel}>
                                 Cancelar
                             </Button>
