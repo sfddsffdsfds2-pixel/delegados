@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ConfirmProvider } from 'material-ui-confirm'
 
 import LoginPage from './pages/login/LoginPage'
-import RegisterDelegatePage from './pages/registerDelegate/RegisterDelegate'
+import RegisterDelegatePage from './pages/registerDelegate/RegisterDelegatePage'
 import EditDelegatePage from './pages/editDelegate/EditDelegatePage'
 import HomePage from './pages/HomePage'
 
