@@ -335,10 +335,6 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                         '& .row-jefe-recinto:hover': {
                           backgroundColor: 'rgba(34, 197, 94, 0.18)',
                         },
-
-                        '& .row-jefe-recinto .MuiDataGrid-cell': {
-                          fontWeight: 600,
-                        },
                     }}
                 />
             </Box>
