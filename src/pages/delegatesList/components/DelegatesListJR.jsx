@@ -1,9 +1,6 @@
 import { memo, useMemo, useState } from 'react';
 import { Box, IconButton, CssBaseline, Button, Typography, Select, MenuItem } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AppTheme from '../../../shared-theme/AppTheme';
 import EditDelegate from './EditDelegate';
 import { useConfirm } from 'material-ui-confirm';
 import { db } from "../../../firebase/firebase";
@@ -164,7 +161,7 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0
           flex: 1,
           maxWidth: 110,
           minWidth: 110,
-          sortable: true,
+          sortable: false,
           disableColumnMenu: true,
           headerAlign: 'center',
           align: 'center',
@@ -276,7 +273,7 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0
     if (updateDelegate) return <FullScreenProgress text='Actualizando delegado...' />
 
     return (
-        <AppTheme>
+        <>
             <CssBaseline enableColorScheme />
 
             <Box sx={{ height: '100%', width: '100%' }}>
@@ -319,7 +316,7 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0
                 onSave={handleSave}
             />
 
-        </AppTheme>
+        </>
     );
 });
 

@@ -1,6 +1,5 @@
 import { Box, CircularProgress, CssBaseline,  Divider, FormControl, FormLabel, MenuItem, Select, styled, Toolbar, Typography } from "@mui/material";
 import DelegatesListJR from "./components/DelegatesListJR";
-import AppTheme from "../../shared-theme/AppTheme";
 import { TextField, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -253,8 +252,13 @@ export default function DelegatesListPageJR() {
     user?.recinto,
   ]);
 
+  const normalizeMesa = (m) => {
+    const n = Number(m);
+    return Number.isFinite(n) && n > 0 ? n : Number.POSITIVE_INFINITY; // sin mesa al final
+  };
+
   const filteredRows = useMemo(() => {
-    return rows.filter((row) => {
+    const out = rows.filter((row) => {
       if (
         selectedDistrito !== 'all' &&
         Number(row.distrito) !== Number(selectedDistrito)
@@ -287,6 +291,18 @@ export default function DelegatesListPageJR() {
 
       return true;
     });
+
+    out.sort((a, b) => {
+      const ma = normalizeMesa(a.mesa);
+      const mb = normalizeMesa(b.mesa);
+      if (ma !== mb) return ma - mb;
+
+      const aa = `${a.apellido ?? ""} ${a.nombre ?? ""}`.toLowerCase();
+      const bb = `${b.apellido ?? ""} ${b.nombre ?? ""}`.toLowerCase();
+      return aa.localeCompare(bb, "es", { sensitivity: "base" });
+    });
+
+    return out;
   }, [rows, selectedDistrito, selectedRecinto, appliedFilters]);
 
   useEffect(() => {
@@ -300,8 +316,7 @@ export default function DelegatesListPageJR() {
   }, []);
 
   useEffect(() => {
-    setMode('dark');
-    return () => setMode('light');
+    return () => setMode('dark');;
   }, [setMode]);
 
   const selectedSearchLabel =
@@ -321,7 +336,7 @@ export default function DelegatesListPageJR() {
     : `${user?.nombre || ""} ${user?.apellido || ""}`.trim();
 
   return (
-    <AppTheme mode="dark">
+    <>
       {loading && <FullScreenProgress text={'Realizando búsqueda'} />}
 
       <CssBaseline enableColorScheme />
@@ -434,6 +449,6 @@ export default function DelegatesListPageJR() {
           />
         </Box>
       </DelegatesListContainer>
-    </AppTheme>
+    </>
   );
 }

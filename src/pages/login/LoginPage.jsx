@@ -125,7 +125,7 @@ export default function LoginPage(props) {
 
 
   return (
-    <AppTheme {...props}>
+    <AppTheme {...props} mode="light">
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
         <Card variant="outlined" sx={{ overflowY: 'auto' }}>
