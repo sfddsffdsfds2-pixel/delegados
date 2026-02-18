@@ -15,6 +15,8 @@ import { NotificationProvider } from './contexts/NotificationContext'
 import DelegatesListPageAdmin from './pages/delegatesList/DelegatesListPageAdmin'
 import NotFoundPage from './generalComponents/NotFoundPage'
 import DelegatesListPageJR from './pages/delegatesList/DelegatesListPageJR'
+import ConteoElectoralPage from './pages/conteoElectoral/ConteoElectoralPage'
+import ConteoElectoralGraficosPage from './pages/conteoElectoral/ConteoElectoralGraficosPage'
 
 
 /* Contenido principal */
@@ -66,6 +68,24 @@ const AppContent = () => {
           element={
             <PrivateRoute allowedRoles={['jefe_recinto', 'super_admin']}>
               <DelegatesListPageJR />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/conteo-electoral"
+          element={
+            <PrivateRoute allowedRoles={['admin', 'super_admin', 'jefe_recinto']}>
+              <ConteoElectoralPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/conteo-electoral-graficos"
+          element={
+            <PrivateRoute allowedRoles={['admin', 'super_admin', 'jefe_recinto']}>
+              <ConteoElectoralGraficosPage />
             </PrivateRoute>
           }
         />

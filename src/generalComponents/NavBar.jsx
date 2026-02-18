@@ -12,6 +12,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import GroupsIcon from '@mui/icons-material/Groups';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 export default function NavBar({ open, onClose }) {
 
@@ -30,6 +31,11 @@ export default function NavBar({ open, onClose }) {
                     label: "Añadir delegado",
                     icon: <PersonAddIcon />,
                     path: "/registrar-delegado"
+                },
+                {
+                    label: "Conteo Electoral",
+                    icon: <BarChartIcon />,
+                    path: "/conteo-electoral"
                 },
             ]
         }
