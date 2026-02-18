@@ -305,14 +305,11 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                     columns={columns}
                     pageSizeOptions={[50, 100]}
                     disableColumnResize
-                    localeText={{
-                        noRowsLabel: 'Sin datos para mostrar'
-                    }}
+                    localeText={{ noRowsLabel: 'Sin datos para mostrar' }}
                     initialState={{
-                        pagination: {
-                            paginationModel: { pageSize: 50, page: 0 },
-                        },
+                      pagination: { paginationModel: { pageSize: 50, page: 0 } },
                     }}
+                    getRowClassName={(params) => (params.row?.jefe_recinto ? "row-jefe-recinto" : "")}
                     sx={{
                         height: '100%',
                         '& .MuiDataGrid-columnHeaders': {
@@ -331,6 +328,16 @@ const DelegatesListAdmin = memo(function DelegatesList({ rows, setRows }) {
                         },
                         '& .MuiDataGrid-cell': {
                             borderRight: '1px solid #1f2937',
+                        },
+                        '& .row-jefe-recinto': {
+                          backgroundColor: 'rgba(34, 197, 94, 0.12)',
+                        },
+                        '& .row-jefe-recinto:hover': {
+                          backgroundColor: 'rgba(34, 197, 94, 0.18)',
+                        },
+
+                        '& .row-jefe-recinto .MuiDataGrid-cell': {
+                          fontWeight: 600,
                         },
                     }}
                 />
