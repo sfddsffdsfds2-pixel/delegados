@@ -200,8 +200,8 @@ export default function HomePage()
       <Box
       id="vision"
         sx={{
-          py: { xs: 4, md: 16 },
-          px: { xs: 3, md: 10 },
+          py: { xs: 4, md: 0 },
+          px: { xs: 3, md: 0 },
           background: "#f5efe7",
         }}
       >
@@ -221,7 +221,7 @@ export default function HomePage()
             viewport={{ once: true }}
             sx={{ flex: 1 }}
           >
-            <Typography sx={{ color: "#e67e00", fontWeight: 700, mb: 2 }}>
+            <Typography sx={{ color: "#e67e00", fontWeight: 700, mb: 2, mt: { xs: 2 , md: 6 },  }}>
               ● Una nueva visión
             </Typography>
 
@@ -256,7 +256,7 @@ export default function HomePage()
   width="100%"
 >
   <Button
-  variant="contained"
+  variant="outlined"
   onClick={() => {
     const seccion = document.getElementById("redes");
     if (seccion) {
@@ -265,18 +265,22 @@ export default function HomePage()
   }}
     fullWidth
     sx={{
-      background: "#e67e00",
-      px: 4,
-      py: 1.5,
-      fontWeight: 700,
-      borderRadius: 3,
+    backgroundColor: "#e98007df !important",    // color por defecto del botón
+    color: "#ffffff !important",                 // texto blanco
+    boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+    px: 4,
+    py: 1.5,
+    fontWeight: 700,
+    borderRadius: 3,
+    '&:hover': {
+      backgroundColor: "#ff8c1a !important", }
     }}
   >
     Unete al cambio →
   </Button>
 
   <Button
-   variant="contained"
+  variant="outlined"
   onClick={() => {
     const seccion = document.getElementById("propuestas");
     if (seccion) {
@@ -285,13 +289,16 @@ export default function HomePage()
   }}
     fullWidth
     sx={{
+       backgroundColor: "transparent !important", 
       borderColor: "#e67e00",
-      color: "#e67e00",
-      background: "transparent",
+      color: "#e67e00 !important",
+      boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
       px: 4,
       py: 1.5,
       fontWeight: 700,
       borderRadius: 3,
+      '&:hover': {
+      backgroundColor: "#585757 !important", }
     }}
   >
     Conoce nuestras propuestas
@@ -314,26 +321,26 @@ export default function HomePage()
     <Typography sx={{ fontSize: "2rem", fontWeight: 900, color: "#e67e00" }}>
       10
     </Typography>
-    <Typography sx={{ fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" } }}>
+    <Typography sx={{ fontSize: {  color: "#6b4a3a",xs: "0.75rem", sm: "0.9rem", md: "1rem" } }}>
       Distitos unidos 
     </Typography>
   </Box>
 
   <Box sx={{ textAlign: "center", flex: 1 }}>
     <Typography sx={{ fontSize: "2rem", fontWeight: 900, color: "#e67e00" }}>
-      7
+      + 7
     </Typography>
-    <Typography sx={{ fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" } }}>
+    <Typography sx={{ fontSize: {  color: "#6b4a3a",xs: "0.75rem", sm: "0.9rem", md: "1rem" } }}>
       Propuestas principales
     </Typography>
   </Box>
 
   <Box sx={{ textAlign: "center", flex: 1 }}>
     <Typography sx={{ fontSize: "2rem", fontWeight: 900, color: "#e67e00" }}>
-      95+
+      95 +
     </Typography>
-    <Typography sx={{ fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" } }}>
-      Otb's y organizaciones sociales
+    <Typography sx={{ fontSize: {  color: "#6b4a3a",xs: "0.75rem", sm: "0.9rem", md: "1rem" } }}>
+      Otb's y organizaciones 
     </Typography>
   </Box>
 </Box>
@@ -788,18 +795,17 @@ id="propuestas"
   <Box
     sx={{
       display: "flex",
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "flex-start",
-      gap: { xs: 2, sm: 3, md: 10 },
-      maxWidth: 1200,
-      mx: "auto",
-      width: "100%",
-      flexWrap: "nowrap",
+    flexDirection: { xs: "column", md: "row" },
+    justifyContent: "center",
+    alignItems: "flex-start", // 🔥 IMPORTANTE
+    gap: { xs: 1, md: 2 },
+    maxWidth: 1200,
+    mx: "auto",
+    width: "100%",
     }}
   >
     {/* ===== Columna 1 ===== */}
-    <Box sx={{ flex: 1.4, minWidth: 0 }}>
+    <Box sx={{ flex: 1, minWidth: 300 }}>
       <Typography
         sx={{
           fontSize: { xs: "0.85rem", sm: "1.1rem", md: "2rem" },
@@ -824,12 +830,16 @@ id="propuestas"
     </Box>
 
     {/* ===== Columna 2 ===== */}
-    <Box sx={{ flex: 0.8, minWidth: 0 }}>
+    <Box sx={{ flex: 1, minWidth: 300,display: "flex",
+    flexDirection: "column",
+   alignItems: { xs: "flex-start", md: "center" }, // móvil al inicio, desktop centrado
+    mx: { xs: 0, md: "auto" }, }}>
       <Typography
         sx={{
           fontWeight: 700,
           mb: { xs: 0.5, md: 1 },
           fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
+          
         }}
       >
         Navegación
