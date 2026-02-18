@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import MuiCard from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { styled, useColorScheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { db } from "../../firebase/firebase";
 import { doc, getDoc, setDoc, serverTimestamp, runTransaction } from "firebase/firestore";
@@ -83,7 +83,6 @@ const Container = styled(Box)(({ theme }) => ({
 
 export default function RegisterDelegatePage(props) {
   const navigate = useNavigate();
-  const { setMode } = useColorScheme();
   const [loading, setIsLoading] = useState(false);
   const [selectedDistrito, setSelectedDistrito] = useState('all');
   const [selectedRecinto, setSelectedRecinto] = useState('all');
@@ -114,14 +113,6 @@ export default function RegisterDelegatePage(props) {
       })
       .catch(() => { });
   };
-
-  React.useEffect(() => {
-    setMode('dark');
-
-    return () => {
-      setMode('light');
-    };
-  }, [setMode]);
 
   const [formData, setFormData] = React.useState({
     nombre: '',
