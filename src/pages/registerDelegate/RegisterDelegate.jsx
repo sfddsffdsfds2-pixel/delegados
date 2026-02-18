@@ -193,9 +193,11 @@ export default function RegisterDelegatePage(props) {
     if (loading) return;
 
     const ciClean = String(formData.ci).trim().replace(/\s+/g, "");
-    const ciFinal = formData.ciExtension
-      ? `${ciClean} ${formData.ciExtension}`
-      : ciClean;
+    const ext = String(formData.ciExtension || "").trim().toUpperCase();
+
+    const uid = `${ciClean}${ext}`;
+
+    const ciFinal = ext ? `${ciClean} ${ext}` : ciClean;
     const distNum = Number(formData.distrito);
 
     const isJR = formData.rol === "jefe_recinto";
@@ -203,12 +205,18 @@ export default function RegisterDelegatePage(props) {
     const clean = {
       nombre: formData.nombre.trim(),
       apellido: formData.apellido.trim(),
-      ci: ciFinal,
+
+      ci: ciClean,
+      ciExtension: ext,
+      ciFull: ciFinal,
+
       telefono: formData.telefono.trim(),
       distrito: distNum,
       recinto: formData.recinto,
       createdAt: serverTimestamp(),
       jefe_recinto: isJR,
+
+      uid,
     };
 
     if (
@@ -252,7 +260,7 @@ export default function RegisterDelegatePage(props) {
         });
       }
 
-      const ref = doc(db, "delegados", ciClean);
+      const ref = doc(db, "delegados", uid);
 
       await runTransaction(db, async (tx) => {
         const snap = await tx.get(ref);
@@ -269,7 +277,7 @@ export default function RegisterDelegatePage(props) {
         const arr = raw ? JSON.parse(raw) : [];
         const next = Array.isArray(arr) ? arr : [];
 
-        next.unshift({ id: ciClean, ...clean });
+        next.unshift({ id: uid, ...clean });
 
         sessionStorage.setItem("delegados", JSON.stringify(next));
       } catch (e2) {
@@ -277,7 +285,7 @@ export default function RegisterDelegatePage(props) {
       }
 
       notify("Delegado registrado exitosamente.", 'success');
-      setCreatedUser({ id: ciClean, ...clean, email: formData.email || "", password: formData.confirmPassword || "" });
+      setCreatedUser({ id: uid, ...clean, email: formData.email || "", password: formData.confirmPassword || "" });
       setShowCreatedModal(true);
 
     } catch (err) {
@@ -285,7 +293,7 @@ export default function RegisterDelegatePage(props) {
 
       if (err?.message === "CI_EXISTS") {
         notify("Error al registrar: Este C.I. ya está registrado en el sistema.", 'error');
-        return;
+        return; 
       }
       notify("Ocurrió un error inesperado al registrar el delegado. Inténtalo de nuevo más tarde.", "success");
     } finally {
