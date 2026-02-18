@@ -125,68 +125,80 @@ export default function DelegatesListPageAdmin() {
     }
   }, [searchText]);
 
+  const normalizeMesa = (m) => {
+    const n = Number(m);
+    return Number.isFinite(n) && n > 0 ? n : Number.POSITIVE_INFINITY; // sin mesa al final
+  };
+
+  const normalizeDistrito = (d) => {
+    const n = Number(d);
+    return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY;
+  };
 
   const filteredRows = useMemo(() => {
-    return rows.filter((row) => {
-
+    const out = rows.filter((row) => {
       // 🔹 FILTRO MOSTRAR (JR o todos)
-      if (mostrarFiltro === 'jr' && !row.jefe_recinto) {
-        return false;
-      }
+      if (mostrarFiltro === 'jr' && !row.jefe_recinto) return false;
 
       // 🔹 FILTRO DISTRITO
       if (
         selectedDistrito !== 'all' &&
         Number(row.distrito) !== Number(selectedDistrito)
-      ) {
-        return false;
-      }
+      ) return false;
 
       // 🔹 FILTRO RECINTO
-      if (
-        selectedRecinto !== 'all' &&
-        row.recinto !== selectedRecinto
-      ) {
-        return false;
-      }
-
+      if (selectedRecinto !== 'all' && row.recinto !== selectedRecinto) return false;
 
       // 🔹 FILTRO BUSQUEDA (SOLO APLICADO)
       if (appliedFilters.searchText.trim() !== '') {
         const search = appliedFilters.searchText.toLowerCase().trim();
 
         if (appliedFilters.searchType === 'ci') {
-          if (!String(row.ci).toLowerCase().includes(search)) {
-            return false;
-          }
+          if (!String(row.ci).toLowerCase().includes(search)) return false;
         }
 
         if (appliedFilters.searchType === 'telefono') {
-          if (!String(row.telefono).toLowerCase().includes(search)) {
-            return false;
-          }
+          if (!String(row.telefono).toLowerCase().includes(search)) return false;
         }
 
         if (appliedFilters.searchType === 'nombre') {
-          const fullName = `${row.nombre ?? ''} ${row.apellido ?? ''}`
-            .toLowerCase()
-            .trim();
-
-          if (!fullName.includes(search)) {
-            return false;
-          }
+          const fullName = `${row.nombre ?? ''} ${row.apellido ?? ''}`.toLowerCase().trim();
+          if (!fullName.includes(search)) return false;
         }
       }
 
       return true;
     });
-  }, [
-    rows,
-    selectedDistrito,
-    selectedRecinto,
-    appliedFilters,
-    mostrarFiltro
-  ]);
+    out.sort((a, b) => {
+      // 1) distrito ASC
+      const da = normalizeDistrito(a.distrito);
+      const db = normalizeDistrito(b.distrito);
+      if (da !== db) return da - db;
+
+      // 2) recinto ASC
+      const ra = String(a.recinto ?? "").trim().toLowerCase();
+      const rb = String(b.recinto ?? "").trim().toLowerCase();
+      const recintoCmp = ra.localeCompare(rb, "es", { sensitivity: "base" });
+      if (recintoCmp !== 0) return recintoCmp;
+
+      // 3) jefe de recinto primero (true arriba)
+      const ja = a.jefe_recinto ? 1 : 0;
+      const jb = b.jefe_recinto ? 1 : 0;
+      if (ja !== jb) return jb - ja; // true primero
+
+      // 4) mesa ASC (sin mesa al final)
+      const ma = normalizeMesa(a.mesa);
+      const mb = normalizeMesa(b.mesa);
+      if (ma !== mb) return ma - mb;
+
+      // desempate opcional
+      const aa = `${a.apellido ?? ''} ${a.nombre ?? ''}`.toLowerCase();
+      const bb = `${b.apellido ?? ''} ${b.nombre ?? ''}`.toLowerCase();
+      return aa.localeCompare(bb, "es", { sensitivity: "base" });
+    });
+
+    return out;
+  }, [rows, selectedDistrito, selectedRecinto, appliedFilters, mostrarFiltro]);
 
 
 
@@ -216,7 +228,9 @@ export default function DelegatesListPageAdmin() {
 
   const dynamicPlaceholder = `Introduce el ${formattedLabel}`;
 
-
+  useEffect(() => {
+    return () => setMode('dark');;
+  }, [setMode]);
 
   return (
     <>

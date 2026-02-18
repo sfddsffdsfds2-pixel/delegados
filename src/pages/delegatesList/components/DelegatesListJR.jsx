@@ -161,7 +161,7 @@ const DelegatesListJR = memo(function DelegatesList({ rows, setRows, mesaMax = 0
           flex: 1,
           maxWidth: 110,
           minWidth: 110,
-          sortable: true,
+          sortable: false,
           disableColumnMenu: true,
           headerAlign: 'center',
           align: 'center',
